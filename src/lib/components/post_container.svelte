@@ -6,6 +6,7 @@
   import Toc from '$lib/components/post_toc.svelte'
   import Action from '$lib/components/post_action.svelte'
   import Footer from '$lib/components/footer.svelte'
+  import Profile from "$lib/components/index_profile.svelte";
   export let post: Urara.Post
 </script>
 
@@ -17,6 +18,7 @@
     out:fly={{ x: 25, duration: 300 }}
     class="flex-1 w-full order-first ease-out transform mx-auto xl:mr-0 xl:ml-0">
     {#if browser}
+      <Profile />
       <Action {post} />
     {/if}
   </div>
@@ -30,7 +32,7 @@
       </div>
     {/if}
   </div>
-  <div class="flex-none w-full max-w-screen-md mx-auto xl:mx-0">
+  <div class="flex-none w-full max-w-screen-xl mx-auto xl:mx-0">
     <Card {post}>
       <slot />
     </Card>

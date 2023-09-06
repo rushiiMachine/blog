@@ -2,11 +2,6 @@
   "name": "urara",
   "type": "module",
   "version": "0.0.1",
-  "license": "WTFPL",
-  "repository": "importantimport/urara",
-  "homepage": "https://github.com/importantimport/urara",
-  "bugs": "https://github.com/importantimport/urara/issues",
-  "author": "藍+85CD",
   "scripts": {
     "clean": "node urara.js clean",
     "tsc": "tsc -p tsconfig.node.json",
@@ -82,5 +77,8 @@
     "overrides": {
       "vite>rollup": "^3.10.0"
     }
+  },
+  "dependencies": {
+    "@iconify-json/simple-icons": "^1.1.69"
   }
 }

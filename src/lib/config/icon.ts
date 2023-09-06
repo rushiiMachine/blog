@@ -25,15 +25,21 @@ export const any: { [key: number]: Icon } = {
   }
 }
 
+const githubAvatarUrl = "https://avatars.githubusercontent.com/u/33725716?v=4";
 export const maskable: { [key: number]: Icon } = {
   192: {
-    src: site.protocol + site.domain + '/assets/maskable@192.png',
+    src: `${githubAvatarUrl}&size=192`,
     sizes: '192x192',
     type: 'image/png'
   },
   512: {
-    src: site.protocol + site.domain + '/assets/maskable@512.png',
+    src: `${githubAvatarUrl}&size=512`,
     sizes: '512x512',
     type: 'image/png'
+  },
+  1024: {
+    src: `${githubAvatarUrl}&size=1024`,
+    sizes: "1024x1024",
+    type: "image/png"
   }
 }

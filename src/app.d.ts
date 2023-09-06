@@ -51,7 +51,7 @@ declare global {
            * the updated date of the post.
            * @remarks auto-generated or set manually
            */
-          updated: string
+          updated?: string
           /**
            * the published date of the post.
            */
@@ -61,6 +61,11 @@ declare global {
            * @remarks currently only supports string
            */
           image?: string
+          /**
+           * the background image for post previews
+           * @remarks currently only supports string
+           */
+          previewImage?: string
           /** enable some advanced features.
            * @property hidden - deprecated, transfer to `unlisted`
            * @property unlisted - hide this post from the homepage and feed.

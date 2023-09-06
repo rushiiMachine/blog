@@ -42,7 +42,7 @@
   if (browser)
     currentTheme =
       localStorage.getItem('theme') ??
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? theme?.[1].name : theme[0].name ?? theme[0].name)
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? theme?.[0].name : theme[1].name ?? theme[0].name)
 </script>
 
 <svelte:head>
@@ -62,7 +62,7 @@
         {#if headerConfig.nav}
           <Nav {path} {title} {pin} {scrollY} nav={headerConfig.nav} />
         {/if}
-        <a href="/" class="btn btn-ghost normal-case text-lg">{site.title}</a>
+        <a href="/" class="btn btn-ghost normal-case text-lg text-primary">{site.title}</a>
       </div>
       <div class="navbar-end">
         {#if headerConfig.search}
@@ -92,7 +92,7 @@
                 class:border-2={currentTheme === name}
                 class:border-primary={currentTheme === name}
                 class="btn btn-ghost w-full hover:bg-primary group rounded-lg flex bg-base-100 p-2 transition-all">
-                <p class="flex-1 text-left text-base-content group-hover:text-primary-content transition-color">
+                <p class="flex-1 text-left text-base-content group-hover:text-primary-content transition-color uppercase">
                   {text ?? name}
                 </p>
                 <div class="grid grid-cols-4 gap-0.5 m-auto">

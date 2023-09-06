@@ -4,9 +4,9 @@
   export let post: Urara.Post
   export let preview: boolean = false
   const stringPublished = new Date(post.published ?? post.created).toLocaleString(date.locales, date.options)
-  const stringUpdated = new Date(post.updated ?? post.published ?? post.created).toLocaleString(date.locales, date.options)
+  const stringUpdated = new Date(post.updated).toLocaleString(date.locales, date.options)
   const jsonPublished = new Date(post.published ?? post.created).toJSON()
-  const jsonUpdated = new Date(post.updated ?? post.published ?? post.created).toJSON()
+  const jsonUpdated = new Date(post.updated).toJSON()
 </script>
 
 <div class:md:mb-4={!preview && post.type !== 'article'} class="flex font-semibold gap-1.5">
@@ -18,18 +18,20 @@
     {site.author.name}
   </a>
   <span class:hidden={preview} class="opacity-50">/</span>
-  <a href={post.path} class="u-url u-uid swap group/time">
+  <time
+    class="font-semibold opacity-75 dt-published"
+    datetime={jsonPublished}
+    itemprop="datePublished">
+    {stringPublished}
+  </time>
+
+  {#if post.updated}
+    <span class="opacity-50">/</span>
     <time
-      class="group-hover/time:opacity-0 font-semibold opacity-75 duration-500 ease-in-out mr-auto dt-published"
-      datetime={jsonPublished}
-      itemprop="datePublished">
-      {stringPublished}
-    </time>
-    <time
-      class="opacity-0 group-hover/time:opacity-100 font-semibold text-primary duration-500 ease-in-out mr-auto dt-updated"
+      class="opacity-50 font-semibold mr-auto dt-updated"
       datetime={jsonUpdated}
       itemprop="dateModified">
-      {stringUpdated}
+    {stringUpdated}
     </time>
-  </a>
+  {/if}
 </div>

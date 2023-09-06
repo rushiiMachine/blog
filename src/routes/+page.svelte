@@ -67,7 +67,7 @@
       </div>
     {/if}
   </div>
-  <div class="flex-none w-full max-w-screen-md mx-auto xl:mx-0">
+  <div class="flex-none w-full max-w-screen-lg mx-auto xl:mx-0">
     {#key posts}
       <!-- {:else} is not used because there is a problem with the transition -->
       {#if loaded && posts.length === 0}

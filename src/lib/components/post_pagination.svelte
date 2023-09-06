@@ -36,23 +36,15 @@
     <div
       class:image-full={next['image']}
       class:md:rounded-l-box={prev && !prev['image']}
-      class="flex-1 card group rounded-none before:!rounded-none overflow-hidden">
-      {#if next['image']}
-        <figure class="!block">
-          <Image
-            class="object-center h-full w-full absolute group-hover:scale-105 transition-transform duration-500 ease-in-out"
-            src={next['image']}
-            alt={next['alt'] ?? next['image']} />
-        </figure>
-      {/if}
-      <div class="card-body">
+      class="flex-1 group rounded-none before:!rounded-none overflow-hidden">
+      <div class="card-body flex flex-row">
         <a
           rel="next"
           href={next.path}
-          class="card-title block text-right mb-0 ml-auto bg-[length:100%_0%] bg-[position:0_88%] underline decoration-3 decoration-transparent group-hover:decoration-primary hover:bg-[length:100%_100%] hover:text-primary-content bg-gradient-to-t from-primary to-primary bg-no-repeat transition-all ease-in-out duration-300">
+          class="card-title text-right mb-0 ml-auto bg-[length:100%_0%] bg-[position:0_88%] underline decoration-3 underline-offset-2 decoration-transparent group-hover:decoration-primary group-hover:text-primary bg-gradient-to-t from-primary to-primary bg-no-repeat transition-all ease-in-out duration-300">
           {next['title'] ?? next['summary'] ?? next.path.slice(1)}
         </a>
-        <span class="i-heroicons-outline-chevron-right opacity-50 group-hover:opacity-100 ml-auto" />
+        <span class="i-heroicons-outline-chevron-right opacity-50 group-hover:opacity-100 self-center" />
       </div>
     </div>
   {/if}

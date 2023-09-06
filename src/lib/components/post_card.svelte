@@ -8,6 +8,7 @@
   import Image from '$lib/components/prose/img.svelte'
   import Pagination from '$lib/components/post_pagination.svelte'
   import Comment from '$lib/components/post_comment.svelte'
+  import { goto } from "$app/navigation";
   export let post: Urara.Post
   export let preview: boolean = false
   export let loading: 'eager' | 'lazy' = 'lazy'
@@ -36,9 +37,10 @@
   class:md:mb-8={!preview}
   class:lg:mb-16={!preview}
   class:group={preview}
-  class:image-full={preview && post.type === 'article' && post.image}
-  class:before:!rounded-none={preview && post.image}
-  class="h-entry card bg-base-100 rounded-none md:rounded-box md:shadow-xl overflow-hidden z-10">
+  class:image-full={preview && post.type === 'article' && post.previewImage}
+  class:before:!rounded-none={preview && post.previewImage}
+  on:click={() => goto(post.path)}
+  class="h-entry card bg-base-100 rounded-none md:rounded-box md:shadow-xl overflow-hidden z-10 cursor-pointer">
   {#if !preview && postConfig.bridgy}
     <div id="bridgy" class="hidden">
       {#each post.flags?.some( flag => flag.startsWith('bridgy') ) ? post.flags.flatMap( flag => (flag.startsWith('bridgy') ? flag.slice(7) : []) ) : [...(postConfig.bridgy.post ?? []), ...(postConfig.bridgy[post.type] ?? [])] as target}
@@ -53,14 +55,14 @@
   {#if post.in_reply_to}
     <Reply in_reply_to={post.in_reply_to} class="mt-4 mx-4" />
   {/if}
-  {#if post.image && preview}
+  {#if post.previewImage && preview}
     <figure class="!block">
       <Image
         class={post.type === 'article'
-          ? 'u-featured object-center h-full w-full absolute group-hover:scale-105 transition-transform duration-500 ease-in-out'
-          : 'u-photo rounded-xl md:rounded-b-none -mb-6 md:-mb-2'}
-        src={post.image}
-        alt={post.alt ?? post.image}
+          ? 'u-featured object-center h-full w-full absolute group-hover:scale-[1.01] transition-transform duration-500 ease-in-out opacity-50'
+          : 'u-photo rounded-xl md:rounded-b-none -mb-6 md:-mb-2 opacity-50'}
+        src={post.previewImage}
+        alt={post.alt}
         {loading}
         {decoding} />
     </figure>
@@ -72,7 +74,7 @@
     <div class="flex flex-col gap-2">
       {#if post.image && !preview}
         <figure
-          class={`md:order-last rounded-box shadow-xl mb-4 ${
+          class={`md:order-last rounded-box shadow-lg mb-4${
             post.type === 'article' ? 'flex-col gap-2 -mx-4 -mt-8 md:mt-0' : 'flex-col -mx-8'
           }`}>
           <Image
@@ -83,16 +85,18 @@
             {decoding} />
         </figure>
       {/if}
-      <Status {post} {preview} />
+      <div class="mb-2">
+        <Status {post} {preview} />
+      </div>
       {#if post.title}
         {#if preview}
           <h2
             itemprop="name headline"
-            class="card-title text-3xl mr-auto bg-[length:100%_0%] bg-[position:0_88%] underline decoration-4 decoration-transparent group-hover:decoration-primary hover:bg-[length:100%_100%] hover:text-primary-content bg-gradient-to-t from-primary to-primary bg-no-repeat transition-all ease-in-out duration-300">
+            class="card-title text-3xl mr-auto bg-[length:100%_0%] bg-[position:0_88%] underline decoration-3 underline-offset-2 decoration-transparent group-hover:decoration-primary hover:text-primary bg-gradient-to-t from-primary to-primary bg-no-repeat transition-all ease-in-out duration-300">
             <a itemprop="url" class="u-url p-name" href={post.path}>{post.title ?? post.path.slice(1)}</a>
           </h2>
         {:else}
-          <h1 itemprop="name headline" class="card-title text-3xl mb-8 p-name">{post.title ?? post.path.slice(1)}</h1>
+          <h1 itemprop="name headline" class="card-title text-3xl p-name">{post.title ?? post.path.slice(1)}</h1>
         {/if}
       {/if}
       {#if post.summary}
@@ -101,7 +105,7 @@
         </p>
       {/if}
     </div>
-    <main itemprop="articleBody" class:mt-4={post.type !== 'article'} class="urara-prose prose e-content">
+    <main itemprop="articleBody" class:mt-6={post.type !== 'article'} class="urara-prose prose e-content">
       {#if !preview}
         <slot />
       {:else if post.html}

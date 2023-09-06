@@ -9,7 +9,7 @@
 
 <footer
   id="footer"
-  class="footer footer-center bg-base-300 text-base-content shadow-inner p-8 {rounded
+  class="footer footer-center text-base-content p-4 {rounded
     ? 'rounded-box'
     : 'md:rounded-box'} {sticky ? 'sticky bottom-0 z-0 md:static' : ''} {className ?? ''}">
   <div class="prose">

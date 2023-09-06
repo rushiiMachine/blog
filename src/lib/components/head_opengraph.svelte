@@ -14,8 +14,8 @@
     {#if post.summary}
       <meta property="og:description" content={post.summary} />
     {/if}
-    {#if post.image}
-      <meta property="og:image" content={(post.image.startsWith('http') ? '' : site.protocol + site.domain) + post.image} />
+    {#if post.previewImage}
+      <meta property="og:image" content={(post.previewImage.startsWith('http') ? '' : site.protocol + site.domain) + post.previewImage} />
       <meta name="twitter:card" content="summary_large_image" />
     {:else}
       <meta property="og:image" content={maskable['512'].src ?? any['512'].src ?? any['192'].src} />
