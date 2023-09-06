@@ -16,10 +16,9 @@
     onMount(async () => {
         info = await fetch(`https://api.github.com/repos/${user}/${repo}`).then(res => res.json())
     })
-
 </script>
 
-<div class="card bg-base-100 !bg-base-200 my-4 ">
+<div class="card bg-base-100 !bg-base-200 my-4">
     <div class="p-6">
         {#if info}
             <div class="flex">

@@ -37,10 +37,11 @@
   class:md:mb-8={!preview}
   class:lg:mb-16={!preview}
   class:group={preview}
+  class:cursor-pointer={preview}
   class:image-full={preview && post.type === 'article' && post.previewImage}
   class:before:!rounded-none={preview && post.previewImage}
-  on:click={() => goto(post.path)}
-  class="h-entry card bg-base-100 rounded-none md:rounded-box md:shadow-xl overflow-hidden z-10 cursor-pointer">
+  on:click={() => preview && goto(post.path)}
+  class="h-entry card bg-base-100 rounded-none md:rounded-box md:shadow-xl overflow-hidden z-10">
   {#if !preview && postConfig.bridgy}
     <div id="bridgy" class="hidden">
       {#each post.flags?.some( flag => flag.startsWith('bridgy') ) ? post.flags.flatMap( flag => (flag.startsWith('bridgy') ? flag.slice(7) : []) ) : [...(postConfig.bridgy.post ?? []), ...(postConfig.bridgy[post.type] ?? [])] as target}
