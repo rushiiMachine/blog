@@ -3,7 +3,7 @@ title: 'Aliucord: Modding the legacy Discord app'
 previewImage: 'https://cdn.discordapp.com/banners/811255666990907402/9551a75b452ae676cbf6519371785917.webp?size=1024&width=0&height=442'
 alt: 'Aliucord'
 created: 2023-09-05
-updated: null
+updated: 2023-09-05
 tags:
   - 'Discord'
   - 'Android'
@@ -132,7 +132,7 @@ We eventually solved this with the development of the following projects:
     - [Github](https://github.com/Aliucord/Aliucord/tree/main/Aliucord)
     - This is the "actual" place where modding starts.
     - It loads external plugins, initializes other utility patches, and adds bugfixes
-- [Aliucord Gradle](#aliucord-gradle)
+- Aliucord Gradle
     - [Github](https://github.com/Aliucord/gradle)
     - This is a gradle plugin that is used solely for the build process in development.
     - Builds plugins, core, injector into the necessary format
@@ -143,10 +143,10 @@ We eventually solved this with the development of the following projects:
 
 *Note:* Manager is not officially released but the predecessor works in the same way.
 
-[//]: # (FIXME: overscroll doesn't work)
-<div class="flex gap-6 -my-6">
-    <img class="flex-1" src="./manager_1.png" alt="Manager home screen" width="300"/>
-    <img class="flex-1" src="./manager_2.png" alt="Manager installer screen" width="300"/>    
+<div class="flex gap-2 overflow-x-auto">
+    <img class="rounded-lg my-0" src="./manager_1.png" alt="Manager home screen" width="350"/>
+    <img class="rounded-lg my-0" src="./manager_2.png" alt="Manager installer screen" width="350"/>
+    <br/>
 </div>
 
 The first time a user touches your project they must have a good experience otherwise they'll just give up.
@@ -164,8 +164,7 @@ the repacking process is hidden under a single button and then installation happ
     - Add in the LSPlant native library
     - Add in .dex containing Kotlin
     - Add in .dex containing Injector [<sup>[dex priority]</sup>](#dex-priority)
-    - [Modify](https://github.com/Aliucord/AliucordManager/blob/main/app/src/main/kotlin/com/aliucord/manager/installer/util/ManifestPatcher.kt)
-      the `AndroidManifest.xml` in order to:
+    - [Modify AndroidManifest.xml] in order to:
         - Change app & package name
         - Add additional permissions
         - Change min sdk version, etc...
@@ -264,11 +263,45 @@ patcher.before<TextView>("setText") {
 }
 ```
 
-<img src="./uwu.png" alt="funny uwu image" width="240"/>
+<img src="./uwu.png" alt="funny uwu image" width="350"/>
 
 # Aliucord Core
 
-# Aliucord Gradle
+This where the actual "mod" part begins. After being downloaded and loaded by Injector,
+we start initializing core patches, and other utilities such as logging, a simpler patcher api, and the plugin manager.
+If everything goes according to plan then an Aliucord section should appear in settings to configure the mod.
+Most of this is uninteresting overall and kind of boilerplate, however this is what plugins interface with.
+
+## Making plugins
+
+With the help of the Aliucord gradle plugin this process is extremely fast since we provide direct references to
+Discord code from plugin source code. By utilizing [dex2jar] to convert dex from an apk back into Java ASM we can use
+it as reference stubs without actually decompiling. To test, running a single gradle task `pushToAdb` will copy it to
+your phone and restart Aliucord nearly instantly, providing a fast way to debug and test changes that smali patching
+would have taken forever to do.
+
+This makes patching extremely easy with some neat Kotlin syntax (my favorite language ever):
+
+```kotlin
+import com.discord.models.user.CoreUser
+import com.discord.stores.StoreUserTyping
+	
+// Rename everyone to Clyde visually
+patcher.instead<CoreUser>("getUsername") { "Clyde" }
+	
+// Rename a specific user visually
+patcher.before<CoreUser>("getUsername") {
+	if (id == 343383572805058560L) it.result = "Not Clyde!!";
+}
+	
+// Prevent typing indicators from being sent
+patcher.instead<StoreUserTyping>("setUserTyping", Long::class.javaPrimitiveType!!) { null };
+```
+
+To find such methods you can either utilize [jadx] to decompile or personally my favorite in certain situations;
+a combination of [dex2jar] + [Vineflower] (formerly known as Quiltflower).
+After doing so, opening it up in an IDE and searching for references/abusing Ctrl+F is fairly simple
+even if it's time-consuming to find the right way to patch something.
 
 # Postmortem
 
@@ -281,13 +314,16 @@ React Native. (like me)
 
 [//]: # (@formatter:off)
 [Aliucord]: https://github/Aliucord/Aliucord
+[dex2jar]: https://github.com/Aliucord/dex2jar
+[jadx]: https://github.com/aliucord/jadx
+
+[Modify AndroidManifest.xml]: https://github.com/Aliucord/AliucordManager/blob/main/app/src/main/kotlin/com/aliucord/manager/installer/util/ManifestPatcher.kt
+[Disabling AOT profiles]: https://github.com/Aliucord/hook/blob/b9ff4de5f012717b68fd08f473f11cab50536951/core/src/main/cpp/profile_saver.cpp#L20-L60
+[Pruning AOT profiles]: https://github.com/Aliucord/Aliucord/blob/2cf5ce8d74c9da6965f6c57454f9583545e9cd24/Injector/src/main/java/com/aliucord/injector/Injector.kt#L177-L196
 
 [the Unsafe class]: https://github.com/LSPosed/AndroidHiddenApiBypass/blob/main/library/src/main/java/org/lsposed/hiddenapibypass/HiddenApiBypass.java
 [meta-reflection]: https://github.com/Aliucord/Aliucord/commit/700e36e0f8cca668ff7bd5eeece8d08390a3b857
 [calling it natively]: https://github.com/Aliucord/hook/blob/b9ff4de5f012717b68fd08f473f11cab50536951/core/src/main/cpp/hidden_api.cpp#L12-L34
-
-[Disabling AOT profiles]: https://github.com/Aliucord/hook/blob/b9ff4de5f012717b68fd08f473f11cab50536951/core/src/main/cpp/profile_saver.cpp#L20-L60
-[Pruning AOT profiles]: https://github.com/Aliucord/Aliucord/blob/2cf5ce8d74c9da6965f6c57454f9583545e9cd24/Injector/src/main/java/com/aliucord/injector/Injector.kt#L177-L196
 
 [CutTheCord]: https://gitdab.com/distok/cutthecord
 [Treecord]: https://github.com/Treecord/Treecord
@@ -308,3 +344,4 @@ React Native. (like me)
 [Magisk]: https://github.com/topjohnwu/Magisk
 [ApkTool]: https://github.com/iBotPeaches/Apktool
 [Discord Datamining]: https://github.com/Discord-Datamining/Discord-Datamining
+[Vineflower]: https://github.com/Vineflower/vineflower

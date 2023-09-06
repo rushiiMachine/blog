@@ -9,7 +9,7 @@
   const jsonUpdated = new Date(post.updated).toJSON()
 </script>
 
-<div class:md:mb-4={!preview && post.type !== 'article'} class="flex font-semibold gap-1.5">
+<div class:md:mb-4={!preview && post.type !== 'article'} class="flex font-semibold gap-1.5 overflow-x-auto whitespace-nowrap ">
   <a
     class:hidden={preview}
     rel="author"
