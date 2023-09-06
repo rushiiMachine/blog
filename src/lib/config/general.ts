@@ -44,7 +44,8 @@ export const footer: FooterConfig = {
       text: "Source code",
       link: "https://github.com/rushiiMachine/blog"
     }
-  ]
+  ],
+  html: '<a rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>'
 }
 
 export const date: DateConfig = {
