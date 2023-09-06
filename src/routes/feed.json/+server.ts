@@ -32,8 +32,10 @@ const render = (posts = genPosts({ postHtml: true, postLimit: feed.limit, filter
     content_html: post.html,
     summary: post['summary'],
     image: post['image'],
+    previewImage: post['previewImage'],
+    embedImage: post['embedImage'],
     date_published: post.published ?? post.created,
-    date_modified: post.updated ?? post.published ?? post.created,
+    date_modified: post.updated,
     tags: post.tags,
     _indieweb: {
       type: post.type,

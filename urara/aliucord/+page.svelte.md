@@ -1,6 +1,7 @@
 ---
 title: 'Aliucord: Modding the legacy Discord app'
 previewImage: 'https://cdn.discordapp.com/banners/811255666990907402/9551a75b452ae676cbf6519371785917.webp?size=1024&width=0&height=442'
+embedImage: ./aliucord.png
 alt: 'Aliucord'
 created: 2023-09-05
 updated: 2023-09-05

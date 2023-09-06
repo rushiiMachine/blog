@@ -11,11 +11,12 @@
   {#if post}
     <meta property="og:type" content="article" />
     <meta property="og:title" content={post.title ?? post.summary ?? post.path.slice(1)} />
+    <meta content="{site.themeColor}" data-react-helmet="true" name="theme-color" />
     {#if post.summary}
       <meta property="og:description" content={post.summary} />
     {/if}
-    {#if post.previewImage}
-      <meta property="og:image" content={(post.previewImage.startsWith('http') ? '' : site.protocol + site.domain) + post.previewImage} />
+    {#if post.embedImage}
+      <meta property="og:image" content={(post.embedImage.startsWith('http') ? '' : site.protocol + site.domain) + post.embedImage} />
       <meta name="twitter:card" content="summary_large_image" />
     {:else}
       <meta property="og:image" content={maskable['512'].src ?? any['512'].src ?? any['192'].src} />
@@ -29,7 +30,9 @@
     <meta property="og:url" content={site.protocol + site.domain + post.path} />
     <meta property="article:author" content={site.author.name} />
     <meta property="article:published_time" content={post.published ?? post.created} />
-    <meta property="article:modified_time" content={post.updated ?? post.published ?? post.created} />
+    {#if post.updated}
+      <meta property="article:modified_time" content={post.updated} />
+    {/if}
   {:else}
     <meta property="og:type" content="website" />
     <meta property="og:image" content={maskable['512'].src ?? any['512'].src ?? any['192'].src} />
