@@ -14,9 +14,9 @@ tags:
   import Repo from '$lib/components/extra/github_repo.svelte';
 </script>
 
-> Where can I download BetterDiscord for Android?
-
 <Repo user="Aliucord" repo="Aliucord" />
+
+> Where can I download BetterDiscord for Android?
 
 Back in early 2021, not many Discord mods existed for phone users.
 Even though there were a ton of mods for desktop like BetterDiscord or PowerCord, only a couple existed for phone users.
@@ -26,7 +26,9 @@ The only ones I still remember atm were:
 - [Treecord] (*dead*-ish)
 - Bluecord (*closed source, author has made a botnet*)
 
-All 3 of these worked by the same principle, that being smali patches, making development extremely slow and limited in
+# Smali patching
+
+All 3 of the aforementioned worked in the same way, smali patches, making development extremely slow and limited in
 complexity. The way smali patches work is, using something like [ApkTool], firstly you disassemble the app into an IR
 called smali. Think assembly but instead for Java on Android. Next you modify the smali to add your functionality,
 run a diff utility to document the changes you did, and reassemble into a functional apk.
@@ -119,6 +121,9 @@ We eventually solved this with the development of the following projects:
     - [Github](https://github.com/Aliucord/AliucordManager)
     - This is a separate app that repackages a Discord APK on the users phone in order to add LSPlant and the injector.
     - Also serves as a way to avoid DMCA for distributing APKs.
+- [Aliuhook](#aliuhook)
+    - [Github](https://github.com/Aliucord/hook)
+    - This is a wrapper around the native LSPlant C++ API in order to provide a partial Xposed-style Java API.
 - [Aliucord Injector](#aliucord-injector)
     - [Github](https://github.com/Aliucord/Aliucord/tree/main/Injector)
     - Initializes LSPlant / other low level things
@@ -136,7 +141,7 @@ We eventually solved this with the development of the following projects:
 
 # Aliucord Manager
 
-*Note:* Manager is not officially released but the earlier predecessor works in the same way.
+*Note:* Manager is not officially released but the predecessor works in the same way.
 
 [//]: # (FIXME: overscroll doesn't work)
 <div class="flex gap-6 -my-6">
@@ -167,7 +172,26 @@ the repacking process is hidden under a single button and then installation happ
 4. Resign the APK using a key generated on device
 5. Install the APK
 
+## DMCA
+
+The best part about this method is that we personally never have to distribute Discord's APKs, which would be
+copyright infringement and have the chance of being forced to shut down.
+Discord doesn't seem to care a lot about this however as decompilations exist everywhere.
+Most famous is probably the [Discord Datamining] repo, which has existed for >3 years and contains thousands of
+versions of the desktop client, with Discord not seeming to care.
+
+Even if unlikely, better to be safe than sorry and have a cease & desist in your inbox.
+
+# Aliuhook
+
+There isn't much to say other than Ven made a nice Java wrapper around the LSPlant C++ API.
+We actually used [Pine] first before LSPlant existed and eventually switched over after plant became stable enough.
+
+It also handles disabling the [Hidden API Policy](#hidden-api-policy) on Android since it's easier natively.
+
 # Aliucord Injector
+
+This is what initializes Aliuhook (LSPlant) and loads the external Core.
 
 ## .dex priority
 
@@ -196,7 +220,7 @@ public class App extends Application {
 }
 ```
 
-We can now just make an identical class and set the injector as the first `classes.dex`, making it override the
+We can now just make an identical class and make the injector be the first `classes.dex`, making it override the
 identical class from subsequent dex files. From there, just we can call our injection logic directly.
 
 ```java
@@ -211,12 +235,59 @@ public final class App$a {
 }
 ```
 
+## Inlined methods
+
+Due to ART JIT (just-in-time) & AOT (ahead-of-time) compilation, sometimes methods become inlined,
+meaning any call sites for a particular method were replaced by the method body itself for additional performance.
+This breaks hooking, as hooking modifies the method definition instead.
+To avoid this, we disable generating AOT & JIT "profiles" entirely and delete any existing profiles,
+sacrificing the performance optimizations for a greater good.
+
+- [Disabling AOT profiles]
+- [Pruning AOT profiles]
+
+## Hidden API Policy
+
+Starting in Android 9, Android now restricts which non-SDK APIs you are allowed to use.
+This is done by literally blocking any references and reflection to such APIs from your app.
+However, this is purely an ART restriction and as such can be lifted quite easily.
+Essentially, you have to call `dalvik.system.VMRuntime#setHiddenApiExemptions("L")` and this will disable it app-wide.
+There are multiple ways to do this, like: meta-reflection, JNI, or my favorite and most cursed, [the Unsafe class].
+
+We've used [meta-reflection] and later switched to [calling it natively] instead.
+
+This allows you to do dumb shit like this:
+
+```kotlin
+patcher.before<TextView>("setText") {
+	it.args[0] = "uwu"
+}
+```
+
+<img src="./uwu.png" alt="funny uwu image" width="240"/>
+
 # Aliucord Core
 
 # Aliucord Gradle
 
+# Postmortem
+
+Is this overcomplicated? Yes. Is it incredibly fragile? Absolutely.
+
+The end goal was reached however, and we have a nice client mod with pretty themes, a saturated list of plugins,
+and tons of people that still use it. Even though this version of Discord is now more than a year old
+(outdated since August 2022) it's still on life support with the help of people who *despise* the new app built with
+React Native. (like me)
+
 [//]: # (@formatter:off)
 [Aliucord]: https://github/Aliucord/Aliucord
+
+[the Unsafe class]: https://github.com/LSPosed/AndroidHiddenApiBypass/blob/main/library/src/main/java/org/lsposed/hiddenapibypass/HiddenApiBypass.java
+[meta-reflection]: https://github.com/Aliucord/Aliucord/commit/700e36e0f8cca668ff7bd5eeece8d08390a3b857
+[calling it natively]: https://github.com/Aliucord/hook/blob/b9ff4de5f012717b68fd08f473f11cab50536951/core/src/main/cpp/hidden_api.cpp#L12-L34
+
+[Disabling AOT profiles]: https://github.com/Aliucord/hook/blob/b9ff4de5f012717b68fd08f473f11cab50536951/core/src/main/cpp/profile_saver.cpp#L20-L60
+[Pruning AOT profiles]: https://github.com/Aliucord/Aliucord/blob/2cf5ce8d74c9da6965f6c57454f9583545e9cd24/Injector/src/main/java/com/aliucord/injector/Injector.kt#L177-L196
 
 [CutTheCord]: https://gitdab.com/distok/cutthecord
 [Treecord]: https://github.com/Treecord/Treecord
@@ -236,3 +307,4 @@ public final class App$a {
 
 [Magisk]: https://github.com/topjohnwu/Magisk
 [ApkTool]: https://github.com/iBotPeaches/Apktool
+[Discord Datamining]: https://github.com/Discord-Datamining/Discord-Datamining
