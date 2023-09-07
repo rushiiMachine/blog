@@ -18,6 +18,9 @@
     {#if post.embedImage}
       <meta property="og:image" content={(post.embedImage.startsWith('http') ? '' : site.protocol + site.domain) + post.embedImage} />
       <meta name="twitter:card" content="summary_large_image" />
+    {:else if post.embedPreview}
+      <meta property="og:image" content={(post.embedPreview.startsWith('http') ? '' : site.protocol + site.domain) + post.embedPreview} />
+      <meta name="twitter:card" content="summary" />
     {:else}
       <meta property="og:image" content={maskable['512'].src ?? any['512'].src ?? any['192'].src} />
       <meta name="twitter:card" content="summary" />
