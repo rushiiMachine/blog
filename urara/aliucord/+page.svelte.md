@@ -1,14 +1,16 @@
 ---
 title: 'Aliucord: Modding the legacy Discord app'
+summary: 'The internals of Aliucord & how it works'
 previewImage: 'https://cdn.discordapp.com/banners/811255666990907402/9551a75b452ae676cbf6519371785917.webp?size=1024&width=0&height=442'
 embedImage: /aliucord/aliucord.png
 alt: 'Aliucord'
 created: 2023-09-05
-updated: 2023-09-05
+updated: 2023-09-06
 tags:
   - 'Discord'
   - 'Android'
   - 'Modding'
+  - 'Hooking'
 ---
 
 <script>
@@ -312,6 +314,15 @@ The end goal was reached however, and we have a nice client mod with pretty them
 and tons of people that still use it. Even though this version of Discord is now more than a year old
 (outdated since August 2022) it's still on life support with the help of people who *despise* the new app built with
 React Native. (like me)
+
+## Credits
+
+A huge thanks to Juby for starting this project for us all and Ven, 6pak, zt, Wing, Tyman, Xinto, Tyman, manti, and
+the dozens unnamed others that have contributed whether by making plugins or making PRs improving Aliu over the past 3
+years, it wouldn't be where it is today without everyone.
+
+Special thanks to canyie, yujincheng08, vvb2060, and the other Android internals gods who have
+bestowed upon us Pine & LSPlant.
 
 [//]: # (@formatter:off)
 [Aliucord]: https://github/Aliucord/Aliucord

@@ -51,7 +51,7 @@ declare global {
            * the updated date of the post.
            * @remarks auto-generated or set manually
            */
-          updated?: string
+          updated: string
           /**
            * the published date of the post.
            */
