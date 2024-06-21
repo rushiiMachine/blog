@@ -28,12 +28,12 @@ html {
   @apply no-underline font-bold;
 }
 
-.urara-prose > :is(h1, h2, h3, h4, h5) > a::after {
-  @apply pl-2 text-base-200 transition-all content-['#'];
+.urara-prose > :is(h1, h2, h3, h4, h5) > a::before {
+  @apply pr-2.5 text-primary-focus text-opacity-50 transition-all content-['#'];
 }
 
-.urara-prose > :is(h1, h2, h3, h4, h5):hover > a::after {
-  @apply text-primary;
+.urara-prose > :is(h1, h2, h3, h4, h5):hover > a::before {
+  @apply text-primary-focus;
 }
 
 /* .urara-prose table */
