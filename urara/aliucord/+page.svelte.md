@@ -5,12 +5,14 @@ previewImage: 'https://cdn.discordapp.com/banners/811255666990907402/9551a75b452
 embedImage: /aliucord/aliucord.png
 alt: 'Aliucord'
 created: 2023-09-05
-updated: 2023-09-06
+updated: 2024-06-20
 tags:
   - 'Discord'
   - 'Android'
   - 'Modding'
   - 'Hooking'
+categories:
+  - 'Aliucord' 
 ---
 
 <script>
@@ -48,24 +50,26 @@ For reference, here's an example that adds a simple log statement to the followi
 Equivalent smali changes:
 
 ```diff
-+ getstatic java/lang/System.out:java.io.PrintStream
-+ new java/lang/StringBuilder
-+ dup
-+ invokespecial java/lang/StringBuilder.<init>()V
-+ ldc "squaring: "
-+ invokevirtual java/lang/StringBuilder.append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-+ iload1
-+ invokevirtual java/lang/StringBuilder.append(I)Ljava/lang/StringBuilder;
-+ invokevirtual java/lang/StringBuilder.toString()Ljava/lang/String;
-+ invokevirtual java/io/PrintStream.println(Ljava/lang/String;)V
-  iload1
-  iload1
-  imul
-  ireturn
++ sget-object v0, Ljava/lang/System;->out:Ljava/io/PrintStream;
++ new-instance v1, Ljava/lang/StringBuilder;
++ invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
++ const-string v2, "squaring: "
++ invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++ move-result-object v1
++ invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
++ move-result-object v1
++ invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++ move-result-object v1
++ invoke-virtual {v0, v1}, Ljava/io/PrintStream;->println(Ljava/lang/String;)V
+  mul-int p1, p1, p1
+  return p1
 ```
 
-The main issue with this method is that it's extremely time-consuming and just plainly way too hard.
-Now, is there a way to modify methods with code we compile from *source*?
+As you can see from the one line example, this approach is extremely time-consuming and overcomplicates even the
+smallest of changes. While some projects have worked around this by writing as much code as possible separately and
+merging it into the APK later (the Vanced/ReVanced approach), looking at the codebase is like staring at a
+photo of SCP-096 (you're gonna die).
+Is there a way to modify methods dynamically at runtime with code we compile from source?
 
 # Hooking
 
