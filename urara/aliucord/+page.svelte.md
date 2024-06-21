@@ -269,7 +269,7 @@ patcher.before<TextView>("setText", /* ... */) {
 }
 ```
 
-<img src="./uwu.png" alt="funny uwu image" width="350"/>
+<img src="./uwu.png" alt="funny uwu" width="350"/>
 
 # Aliucord Core
 
