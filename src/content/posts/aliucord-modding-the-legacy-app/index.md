@@ -317,11 +317,12 @@ React Native. (like me)
 
 ## Credits
 
-A huge thanks to Juby for starting this project for us all and Ven, 6pak, zt, Wing, Tyman, Xinto, Tyman, manti, and
-the dozens unnamed others that have contributed whether by making plugins or making PRs improving Aliu over the past 3
-years, it wouldn't be where it is today without everyone.
+A huge thanks to [Juby210] for starting this project for us all and [Vendicated], [js6pak], [zt64], [Wingio], [Tyman],
+[Xinto], [mantikafasi], and the dozens of other people that have contributed to Aliucord, whether by making plugins or
+contributing to the project directly over the past 3 years!
+Aliucord would not be where it is today without everyone's efforts.
 
-Special thanks to canyie, yujincheng08, vvb2060, and the other Android internals gods who have
+A special thanks to [canyie], [yujincheng08], [vvb2060], and all the other Android internals gods who have
 bestowed upon us Pine & LSPlant.
 
 [//]: # (@formatter:off)
@@ -357,3 +358,16 @@ bestowed upon us Pine & LSPlant.
 [ApkTool]: https://github.com/iBotPeaches/Apktool
 [Discord Datamining]: https://github.com/Discord-Datamining/Discord-Datamining
 [Vineflower]: https://github.com/Vineflower/vineflower
+
+[Juby210]: https://github.com/Juby210
+[Vendicated]: https://github.com/Vendicated
+[js6pak]: https://github.com/js6pak
+[zt64]: https://github.com/zt64
+[Wingio]: https://github.com/wingio
+[Tyman]: https://github.com/Tymanwastaken
+[Xinto]: https://github.com/X1nto
+[mantikafasi]: https://github.com/mantikafasi
+
+[canyie]: https://github.com/canyie
+[yujincheng08]: https://github.com/yujincheng08
+[vvb2060]: https://github.com/vvb2060 
