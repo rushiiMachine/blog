@@ -64,7 +64,7 @@ export default defineConfig({
 				pluginCustomCopyButton()
 			],
 			defaultProps: {
-				wrap: true,
+				wrap: false,
 				overridesByLang: {
 					'shellsession': {
 						showLineNumbers: false,
