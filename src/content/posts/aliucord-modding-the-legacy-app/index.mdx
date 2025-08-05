@@ -2,12 +2,13 @@
 title: "Aliucord: Modding the legacy Discord app"
 description: "A high-level overview of Aliucord and how it works"
 published: 2023-09-05
-updated: 2024-06-20
+updated: 2025-08-05
 image: ./aliucord.svg
 category: "Aliucord"
 tags: [ "Android", "Discord", "Modding", "Hooking" ]
 draft: false
 ---
+
 
 
 import MDXImage from "../../../components/misc/MDXImage.astro";
@@ -18,15 +19,19 @@ import img_uwu from "./uwu.png";
 
 ::github{repo="Aliucord/Aliucord"}
 
-> Where can I download BetterDiscord for Android?
+<br/>
 
-Back in early 2021, not many Discord mods existed for phone users.
-Even though there were a ton of mods for desktop like BetterDiscord or PowerCord, only a couple existed for phone users.
-The only ones I still remember atm were:
+> "Where can I download BetterDiscord for Android?"
+
+Back in early 2021, not many Discord client mods existed for phone users. Even though there was multiple Desktop mods,
+such as BetterDiscord and PowerCord, only a couple existed for phone users, and they were all very primitive due to
+the way they functioned.
+
+The ones I can recall that were popular at that time were:
 
 - [CutTheCord] (*feature limited*)
 - [Treecord] (*dead*-ish)
-- Bluecord (*closed source, author has made a botnet*)
+- Bluecord (*closed source, author has created malware before*)
 
 # Smali patching
 
@@ -121,23 +126,18 @@ the rest of our external code, to avoid repackaging the entire thing on any minu
 
 We eventually solved this with the development of the following projects:
 
-- [Aliucord Manager](#aliucord-manager)
-    - [Github](https://github.com/Aliucord/AliucordManager)
+- [Aliucord Manager](#aliucord-manager) ([Github](https://github.com/Aliucord/AliucordManager))
     - This is a separate app that repackages a Discord APK on the users phone in order to add LSPlant and the injector.
     - Also serves as a way to avoid DMCA for distributing APKs.
-- [Aliuhook](#aliuhook)
-    - [Github](https://github.com/Aliucord/hook)
+- [Aliuhook](#aliuhook) ([Github](https://github.com/Aliucord/hook))
     - This is a wrapper around the native LSPlant C++ API in order to provide a partial Xposed-style Java API.
-- [Aliucord Injector](#aliucord-injector)
-    - [Github](https://github.com/Aliucord/Aliucord/tree/main/Injector)
+- [Aliucord Injector](#aliucord-injector) ([Github](https://github.com/Aliucord/Aliucord/tree/main/Injector))
     - Initializes LSPlant / other low level things
     - This is added into the APK to override a Discord method that is close to startup, in order to load Core.
-- [Aliucord Core](#aliucord-core)
-    - [Github](https://github.com/Aliucord/Aliucord/tree/main/Aliucord)
+- [Aliucord Core](#aliucord-core) ([Github](https://github.com/Aliucord/Aliucord/tree/main/Aliucord))
     - This is the "actual" place where modding starts.
     - It loads external plugins, initializes other utility patches, and adds bugfixes
-- Aliucord Gradle
-    - [Github](https://github.com/Aliucord/gradle)
+- Aliucord Gradle Plugin ([Github](https://github.com/Aliucord/gradle-plugin))
     - This is a gradle plugin that is used solely for the build process in development.
     - Builds plugins, core, injector into the necessary format
         - Plugins & Core into a zip containing a manifest & code compiled to dex
