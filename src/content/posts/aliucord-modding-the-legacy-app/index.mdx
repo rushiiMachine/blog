@@ -9,6 +9,13 @@ tags: [ "Android", "Discord", "Modding", "Hooking" ]
 draft: false
 ---
 
+
+import MDXImage from "../../../components/misc/MDXImage.astro";
+
+import img_manager_1 from "./manager_1.png";
+import img_manager_2 from "./manager_2.png";
+import img_uwu from "./uwu.png";
+
 ::github{repo="Aliucord/Aliucord"}
 
 > Where can I download BetterDiscord for Android?
@@ -138,14 +145,9 @@ We eventually solved this with the development of the following projects:
 
 # Aliucord Manager
 
-*Note:* Manager is not officially released but the predecessor works in the same way.
-
-
-[//]: # (TODO: fix this)
-<div class="flex gap-2 overflow-x-auto">
-    <img class="rounded-lg my-0" src="./manager_1.png" alt="Manager home screen" width="350"/>
-    <img class="rounded-lg my-0" src="./manager_2.png" alt="Manager installer screen" width="350"/>
-    <br/>
+<div className="flex gap-2">
+    <MDXImage src={img_manager_2} alt="Manager installer screen"/>
+    <MDXImage src={img_manager_1} alt="Manager home screen"/>
 </div>
 
 The first time a user touches your project they must have a good experience otherwise they'll just give up.
@@ -265,8 +267,7 @@ patcher.before<TextView>("setText", /* ... */) {
 }
 ```
 
-[//]: # (TODO: fix this)
-<img src="./uwu.png" alt="funny uwu" width="350"/>
+<MDXImage src={img_uwu} alt="Discord UI but every text element is replaced with uwu"/>
 
 # Aliucord Core
 

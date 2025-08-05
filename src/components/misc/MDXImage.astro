@@ -1,0 +1,25 @@
+---
+import { Image } from "astro:assets";
+import type { LocalImageProps } from "astro:assets";
+
+type Props = LocalImageProps & {
+    alt?: string;
+    class?: string;
+    dimBg?: boolean;
+    width?: number;
+    height?: number;
+};
+
+const {
+    src, width, height,
+    alt = "",
+    dimBg,
+    class: className,
+} = Astro.props;
+---
+
+<div class:list={["flex justify-center", className]}>
+	<div class:list={["transition absolute pointer-events-none", { "dark:bg-black/10 bg-opacity-50": !!dimBg }]}/>
+	<Image src={src} alt={alt} width={width} height={height} class=""/>
+</div>
+

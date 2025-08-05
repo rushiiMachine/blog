@@ -1,3 +1,4 @@
+import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
@@ -15,6 +16,7 @@ import remarkDirective from "remark-directive"; /* Handle directives */
 import remarkGithubAdmonitionsToDirectives from "remark-github-admonitions-to-directives";
 import remarkMath from "remark-math";
 import remarkSectionize from "remark-sectionize";
+import devtoolsJson from "vite-plugin-devtools-json";
 import { expressiveCodeConfig } from "./src/config.ts";
 import { pluginLanguageBadge } from "./src/plugins/expressive-code/language-badge.ts";
 import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.mjs";
@@ -26,9 +28,12 @@ import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-cop
 
 // https://astro.build/config
 export default defineConfig({
-	site: "https://fuwari.vercel.app/",
+	site: "https://blog.rushii.dev",
 	base: "/",
-	trailingSlash: "always",
+	trailingSlash: "ignore",
+    redirects: {
+        "/aliucord": "/posts/aliucord-modding-the-legacy-app",
+    },
 	integrations: [
 		tailwind({
 			nesting: true,
@@ -101,6 +106,7 @@ export default defineConfig({
 		}),
         svelte(),
 		sitemap(),
+        mdx(),
 	],
 	markdown: {
 		remarkPlugins: [
@@ -154,6 +160,9 @@ export default defineConfig({
 		],
 	},
 	vite: {
+        plugins: [
+            devtoolsJson(),
+        ],
 		build: {
 			rollupOptions: {
 				onwarn(warning, warn) {
