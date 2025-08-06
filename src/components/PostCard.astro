@@ -78,28 +78,31 @@ const { remarkPluginFrontmatter } = await entry.render();
 
     </div>
 
-    {hasCover && <a href={url} aria-label={title}
+    {hasCover && <a href={url}
+					aria-label={title}
                     class:list={["group",
                         "max-h-[20vh] md:max-h-none mx-4 mt-4 -mb-2 md:mb-0 md:mx-0 md:mt-0",
-                        "md:w-[var(--coverWidth)] relative md:absolute md:top-3 md:bottom-3 md:right-3 rounded-xl overflow-hidden active:scale-95"
+                        "md:w-[var(--coverWidth)] relative md:absolute md:top-3 md:bottom-3 md:right-3 rounded-xl overflow-hidden",
+						"hover:bg-[var(--enter-btn-bg-hover)] active:bg-[var(--enter-btn-bg-active)] active:scale-95",
                     ]} >
-        <div class="absolute pointer-events-none z-10 w-full h-full group-hover:bg-black/30 group-active:bg-black/50 transition"></div>
-        <div class="absolute pointer-events-none z-20 w-full h-full flex items-center justify-center ">
-            <Icon name="material-symbols:chevron-right-rounded"
-                  class="transition opacity-0 group-hover:opacity-100 scale-50 group-hover:scale-100 text-white text-5xl">
-            </Icon>
+        <div class="absolute pointer-events-none z-20 w-full h-full flex items-center justify-end">
+	        <Icon name="material-symbols:chevron-right-rounded"
+	              class:list={[
+					"transition-all text-[var(--primary)] text-4xl mr-3",
+					"group-hover:scale-100 group-hover:scale-[115%]"]}>
+	        </Icon>
         </div>
 	    <ImageWrapper
 		    src={image}
 		    basePath={path.join("content/posts/", getDir(entry.id))}
 		    alt="Cover image of the post"
-		    class="w-full h-full opacity-60"/>
+		    class="w-full h-full brightness-75"/>
     </a>}
 
     {!hasCover &&
         <a href={url} aria-label={title} class="
-         group !hidden md:!flex btn-regular w-20
-         absolute right-3 top-3 bottom-3 rounded-xl !bg-transparent
+         transition group !hidden md:!flex w-20 items-center justify-center
+         absolute right-3 top-3 bottom-3 rounded-xl text-[var(--btn-content)] dark:text-white/75
          hover:bg-[var(--enter-btn-bg-hover)] active:bg-[var(--enter-btn-bg-active)] active:scale-95
         ">
             <Icon name="material-symbols:chevron-right-rounded"
