@@ -6,7 +6,7 @@ interface Props {
 	alt?: string;
 	width?: number;
 	height?: number;
-	poster?: ImageMetadata;
+	preview?: { default: ImageMetadata };
 	class?: string;
 }
 
@@ -15,7 +15,7 @@ const {
 	alt = "",
 	width,
 	height,
-	poster,
+	preview,
 	class: className,
 } = Astro.props;
 ---
@@ -23,7 +23,8 @@ const {
 <div class:list={["flex justify-center", className]}>
 	<div class:list={["transition absolute pointer-events-none"]}/>
 	<video muted autoplay loop
-	       poster={poster?.src}
+		   preload="auto"
+	       poster={preview?.default?.src}
 	       width={width}
 	       height={height}
 	       class="rounded-lg !m-0">

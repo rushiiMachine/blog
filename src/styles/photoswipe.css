@@ -10,3 +10,6 @@
 .pswp__button--close {
     @apply mr-4 !important;
 }
+.pswp video {
+    max-width: unset;
+}

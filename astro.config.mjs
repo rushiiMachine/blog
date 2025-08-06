@@ -160,6 +160,7 @@ export default defineConfig({
 		],
 	},
 	vite: {
+        assetsInclude: ["**/*.mp4"],
         plugins: [
             devtoolsJson(),
         ],
