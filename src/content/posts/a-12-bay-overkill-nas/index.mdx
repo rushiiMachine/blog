@@ -1,0 +1,67 @@
+---
+title: 'A massively overcomplicated NAS build'
+description: 'A future-proof solution to all my data-hoarding and compute needs'
+published: 2025-07-07
+#image:
+category: NAS
+tags: [ "3D Printing", "ZFS" ]
+draft: true
+---
+
+A while back I realized that I had actually completely run out of storage; my combined 5TB across multiple drives had
+completely filled up. Having become a data hoarder myself, I knew that I had to go out and buy more storage at once.
+After all, the biggest sin you can commit is deleting data you aren't absolutely sure you will never need again.
+If you do, eventually you will realize that you **do** actually need it again, whether it be immediately afterward,
+the next day, or even a few months down the road.
+
+But just buying more storage is much easier said than done. My main workstation machine had actually completely used up
+all the available SATA ports (at least, the ones that actually *worked*), and I knew that I was going to have to either
+buy a larger drive and move all my data over, or build an entirely new NAS. One of my biggest priorities going into
+this project was my interest in setting up a home streaming server, that being a combination of [Jellyfin], [Stremio],
+managing torrents and other miscellaneous services. Given that our ISP had just recently upgraded us for free to a
+better plan, this meant that I could finally host a Minecraft server without being our up-link being saturated, and
+causing network lag. Having so many requirements meant that my priorities when picking out the components for my
+NAS/server combo was quite different from a traditional NAS build.
+
+Please note that I don't have any prior experience to build a NAS, and as such don't really know what I am doing.
+Each component that I picked out was very specialized to my exact needs, and this shouldn't be taken as a recommendation
+for you to exactly do what I did!
+
+## Cases
+
+Another one of my main priorities while designing this build was ensuring that this NAS could be upgradable in the
+future. This meant that any pre-built NAS, such as from Synology, was immediately out of the question. I wanted enough
+computing power to run a myriad of services, and enough drive bays to support 100TB+ if it ever came down to it.
+
+Eventually, I landed on 3D printing my own case. Pre-made cases, such as the [Fractal Design's Define] series was just
+too expensive when a much cheaper alternative was available. We had previously bought a Prusa MK3S+ printer a couple
+of years prior, and I hadn't really used it enough to justify the purchase. This way, not only would I minimize costs,
+but it would also give me a reason to finally really *get into* 3D printing.
+
+After searching around for a bit, I eventually decided on printing this [12-Bay ATX NAS case] design by [makerunit].
+The reason behind choosing an ATX build is that I would be able to reuse my current hardware from my workstation, that
+was also an ATX build. This would also give me enough flexibility to potentially add in a GPU to accelerate transcoding
+(AMD's CPUs don't support Intel's QuickSync), a 10GB NIC, HBA cards, and still give me space for things far into the future.
+
+<iframe width="560" height="315"
+        src="https://www.youtube-nocookie.com/embed/h7FyS37KHms"
+        title="YouTube video player"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerpolicy="strict-origin-when-cross-origin"
+        allowfullscreen/>
+
+This part of the project ironically took the longest, mostly because of actually having to learn how to print and
+maintain my printer...
+
+[//]  # (https://www.youtube.com/watch?v=h7FyS37KHms)
+
+[Jellyfin]  https://jellyfin.org/
+
+[Stremio]  https://www.stremio.com/downloads
+
+[Fractal Design's Define]  https://www.fractal-design.com/products/cases/define
+
+[12-Bay ATX NAS case]  https://www.printables.com/model/1278847-12-bay-atx-nas-case/comments
+
+[makerunit]  https://www.youtube.com/@makerunit

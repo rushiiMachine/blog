@@ -1,0 +1,60 @@
+---
+title: 'Introducing Upvote: A client for Reddit, unbound by the API.'
+description: 'u/spez got what he asked for'
+published: 2023-09-07
+draft: true
+category: "Upvote"
+tags: [ "Android", "Jetpack Compose", "Reddit" ]
+---
+
+
+import MDXImage from "../../../components/mdx/MDXImage.astro";
+
+> "whrere dowenloed?"
+
+::github{repo="MateriiApps/Upvote"}
+
+Back in early June 2023 when the pricing changes were announced, I didn’t *really* care that much
+myself as I had never used any 3rd party client, nor had the wish to do so in my 4+ years of lurking.
+Now, this is my personal opinion, but most of the clients I'd seen ranged from poor design to outright ugly, just like
+old.reddit.com (don't @ me). Whether it be for memes, osu! scoreposts, or nowadays just crossposted art from Twitter,
+I had always stubbornly used the website on my phone.
+Combined with adblock, the [older](./old-design.png) design functioned mostly fine for me.
+
+Now, returning back to the API shutdown, I really was amazed how childish the community was.
+Yelling at u/spez perfectly understandable, but actual action? None.
+Let's be honest — a 2-day blackout was never actually going to do anything.
+It just showed Reddit that people will always come back no matter what they do.
+Reddit isn't replaceable, despite what all the people praising Lemmy say.
+Everybody being focused on the public API pricing made them forget about
+how 1st party apps actually work – I'll leave it at that.
+
+Wanting to make something, I planned to start development on the 16th, though I had the initial idea a bit earlier:
+
+<MDXImage src={import("./idea.png")}
+          alt="A Discord screenshot of the original idea for Upvote"/>
+
+# Design
+
+Upvote loosely follows Material 3, a design language for Android. Likewise, it is also heavily inspired by Sync in some
+aspects as it also follows M3 and is overall pretty.
+
+[//]  # (TODO: add screenshots)
+
+# iOS?
+
+**TLDR; no support for foreseeable future**
+
+We made the decision to use and structure our code using Kotlin Multiplatform, giving us the ability to write shared
+logic once. Despite how great this seems, we have decided not to reuse our UI as it doesn't fit the iOS style.
+Rewriting half the app is hard especially given none of us are iOS devs, and only one of us has a hackintosh at all.
+I might be able to set up a macOS VM soon though, so there's that.
+However, Android will always come first and as such we will first focus on finishing Upvote for a platform that
+isn't garbage.
+
+[//]: # (//@formatter:off
+[//]: # (Over the next 15 days, me and a couple of friends spent countless hours trying to make it a reality and we did get a lot)
+[//]: # (of progress. Planning to release the same day as the shutdown, I overworked myself to the point of being so exhausted I)
+[//]: # (could barely function. Seeing as it is now September, the original release date never happened. I got burnt out, and)
+[//]: # (development pretty much halted for the entirety of July and I learned how to pace myself. As of writing this I've put)
+[//]: # (nearly 200 hours of work alone, and it's still rising.)
