@@ -1,0 +1,279 @@
+---
+title: "Octolapse: Setting up beautiful 3D print timelapses"
+description: "Connecting a DSLR camera to a Raspberry Pi with Octolapse to generate clean 3D printing timelapses"
+published: 2025-08-04
+updated: 2025-08-04
+#image: ./aliucord.svg
+category: "3D Printing"
+tags: [ "OctoPrint", "Octolapse", "Cameras" ]
+draft: true
+
+---
+
+
+
+
+import MDXImage from "../../../components/mdx/MDXImage.astro";
+import MDXLoopingVideo from "../../../components/mdx/MDXLoopingVideo.astro";
+import ImageWrapper from "../../../components/misc/ImageWrapper.astro";
+
+
+I recently got into 3d printing (for realsies this time) and had the inkling to try making a few timelapses
+of the parts I was printing, as part of my upcoming NAS case. I had already set up [OctoPrint], a remote web interface
+for my 3d printer that runs on an external device, which in my case was a Raspberry Pi 3B. I was partly inspired to do
+this project by this beautiful timelapse created by [Jeff Geerling] in his
+[blog post](https://www.jeffgeerling.com/blog/2021/beautiful-3d-print-time-lapses-my-nikon-d700-and-octolapse):
+
+<ImageWrapper
+    src="https://www.jeffgeerling.com/sites/default/files/images/pi-rack-tray-3d-print-octolapse.gif"
+    alt="3d print timelapse by Jeff Geerling"
+    width={500}
+    height={282}/>
+
+My first attempt to create a timelapse started with printing a [z-axis mount] to attach to my Prusa MK3S+ printer.
+I dug through our boxes of old wires and electronics, and found an ancient webcam from 2009! It boasted 2 big and
+beautiful megapixels, with a maximum resolution of 1600x1200! What a steal! But as you could probably guess, in reality
+the quality was actually atrocious and completely unusable.
+
+[//]  # (insert an image of the camera mounted)
+
+[//]  # (insert an image of the quality)
+
+Despite this, I still decided to try running a timelapse using the built-in timelapse functionality in OctoPrint.
+After having configured the webcam within OctoPrint (available as a physical `/dev/videoN` device through the
+`video4linux` driver), I enabled timelapses, and let a few print jobs go. While the result was expectedly completely
+unusable, there were a few major things I learned from this attempt:
+
+1. Mounting a timelapse camera onto the z-axis (so that it will move with the printer) was not a good idea.
+While this might be useful for a live video feed to check up on a running print job, this would make for a very
+boring timelapse as you would only ever get to see the side of the printed object.
+2. Consistent lighting would be crucial to make a good timelapse. Even if I was only printing during the day, the
+shadows still change throughout the day and are very noticeable even on a minute-to-minute basis. If the sun sets,
+or goes behind a cloud, or a light is turned off, then my timelapse would be ruined.
+3. And most importantly, I need a much better camera!
+
+What's more, is that I realized that the built-in timelapse functionality is lacking in some crucial features, mainly:
+
+1. Centering: There was no way to move the extruder to one spot for each frame! This resulted in the extruder jumping
+all over the entire print, making for a messy timelapse.
+2. Capturing: This relied on a webcam streaming in video capture mode (not a single-shot crisp image!), which makes
+webcams particularly unsuitable for this task.
+
+<br/>
+
+Fortunately, I already had the most expensive component: a pretty good DSLR camera (borrowed from a family member that
+never used it :D). After quickly taking a few pictures by hand I realized that this would be perfect for this task,
+perhaps even overkill. The rest of the challenge for this project from now on would be connecting it to Octolapse.
+
+Lucky for me, Octolapse already provides multiple guides for connecting DSLR cameras:
+
+- [Configuring a DSLR](https://github.com/FormerLurker/Octolapse/wiki/V0.4---Configuring-a-DSLR)
+- [Configuring a DSLR with Deferred Download](https://github.com/FormerLurker/Octolapse/wiki/V0.4---Configuring-a-DSLR-With-Deferred-Download)
+
+*I also went on a tangent trying to get a live video stream from the camera.
+[webcamize](https://github.com/cowtoolz/webcamize) turned out to do this job well. But for the reasons I mentioned
+earlier, a timelapse from a video stream would not be ideal for this project, not to mention that the video stream was
+limited to the resolution of the preview screen of the camera (much, much less than what the camera was capable of).
+webcamize also consumed 70% of a core at all times while it was running (probably due to the video loopback adapter)
+which was horrible. I abandoned this feat once I found about the official guides from Octolapse*
+
+<br/>
+
+The main gist of connecting a DSLR to Octolapse is using `gphoto2`, a camera control utility, to capture images just
+as if I were pressing the shutter button. Octolapse recommends to avoid immediately downloading images after taking
+them, as the extra time spent waiting could result in globs on the extruder and ruin your print. I took the same
+route and downloaded all the images just before the rendering took place.
+
+While the scripts provided in the 2nd guide will work fine, they have one major drawback, that being that all images
+must be wiped from the camera's SD card in order for it to download the correct images. I tweaked them until I was able
+to remove this requirement entirely, by storing the last taken image's number and downloading all images with a number
+higher than it after the print finishes.
+
+`~/octolapse-scripts/before-print-start.sh`:
+
+```shell
+#!/bin/bash
+
+# IMPORTANT: This folder will likely vary for each camera.
+#            Run `gphoto --list-files` to determine the correct path for images.
+
+CAMERA_FOLDER="/store_00020001/DCIM/100CANON"
+
+
+# Put the arguments sent by Octolapse into variables for easy use
+CAMERA_NAME=$1
+
+set -o errexit
+set -o nounset
+set -o pipefail
+shopt -s nullglob
+
+echo "[-] Camera info:"
+gphoto2 --auto-detect --summary --storage-info
+
+# IMPORTANT: The config keys and values set here may vary across different cameras.
+#            Run 'gphoto --list-all-config' to get all config keys and values.
+
+echo "[+] Synchronizing time on camera"
+echo "[+] Setting camera capture output to SD card"
+gphoto2 --set-config datetimeutc=now \
+        --set-config capturetarget=1
+
+echo "[+] Obtaining the last taken picture number"
+PREV_NUM=$(gphoto2 --folder "$CAMERA_FOLDER" --list-files | grep '^#' | tail -n 1 | awk '{print $1}' | tr -d '#')
+START_NUM=$(($PREV_NUM + 1))
+echo $START_NUM > /tmp/octolapse-start-num
+```
+
+`~/octolapse-scripts/aquire-snapshot.sh`:
+
+```shell
+#!/bin/bash
+
+# Put the arguments sent by Octolapse into variables for easy use
+SNAPSHOT_NUMBER=$1
+DELAY_SECONDS=$2
+DATA_DIRECTORY=$3
+SNAPSHOT_DIRECTORY=$4
+SNAPSHOT_FILENAME=$5
+SNAPSHOT_FULL_PATH=$6
+
+set -o errexit
+set -o nounset
+set -o pipefail
+shopt -s nullglob
+
+
+# Trigger the camera to take an image and immediately exit (will not wait or be downloaded)
+gphoto2 --auto-detect --trigger-capture
+```
+
+`~/octolapse-scripts/before-render.sh`:
+
+```shell
+#!/bin/bash
+
+# IMPORTANT: This folder will likely vary for each camera.
+#            Run `gphoto --list-files` to determine the correct path for images.
+
+CAMERA_FOLDER="/store_00020001/DCIM/100CANON"
+
+
+# Put the arguments sent by Octolapse into variables for easy use
+CAMERA_NAME="$1"
+SNAPSHOT_DIRECTORY="$2"
+SNAPSHOT_FILENAME_TEMPLATE="$3"
+SNAPSHOT_FULL_PATH_TEMPLATE="$4"
+
+set -o errexit
+set -o nounset
+set -o pipefail
+shopt -s nullglob
+
+mkdir -p "$SNAPSHOT_DIRECTORY"
+
+# Get the start img number and the currently highest img number on the camera
+echo "[+] Loading the starting picture number and obtaining the last picture number on the camera"
+START_NUM=$(cat /tmp/octolapse-start-num)
+END_NUM=$(gphoto2 --folder "$CAMERA_FOLDER" --list-files | grep '^#' | tail -n 1 | awk '{print $1}' | tr -d '#')
+
+# Nothing to download
+if [ -z "$END_NUM" ] || [ "$END_NUM" -le "$START_NUM" ]; then
+  echo "[!] No new images taken since starting the print!"
+  exit 0
+fi
+
+# Coerce END_NUM to a number
+END_NUM=$(($END_NUM))
+
+# Download all the images
+cd "$SNAPSHOT_DIRECTORY"
+echo "[+] Downloading images #$START_NUM to #$END_NUM"
+gphoto2 --folder "$CAMERA_FOLDER" --get-file=$START_NUM-$END_NUM --force-overwrite
+
+# Rename all images to the octolapse format
+echo "[+] Renaming images"
+i=0
+for f in *.JPG *.jpg *.JPEG *.jpeg; do
+        new=$(printf "$SNAPSHOT_FILENAME_TEMPLATE" "$i")
+        mv "$f" "$new"
+        i=$((i+1))
+done
+```
+
+My first attempt with this new camera setup turned out to be quite good!
+
+<MDXLoopingVideo
+    src={await import("./first-timelapse-attempt.mp4")}
+    alt="My first good quality print timelapse"/>
+
+However, while testing I encountered another issue I kept running into: the camera's auto power-off functionality. While
+I was able to manually turn this off in the camera's settings, I was unable to automate this via `gphoto2` for some
+reason. This setting *was* marked as writable, but this wasn't the first one I encountered that also behaved like this.
+This means that there would be no way to automatically turn off my camera once my print finishes. Unfortunate, but
+ultimately not that big of an issue.
+
+However, a bigger issue was when I forgot to turn the camera *back on*! Starting a print job would spit out an
+unhelpful error notification from Octolapse, providing no indication of the actual error message:
+
+<MDXImage src={import("./original-error-notif.png")} alt="The original error notification"/>
+
+After tinkering a bit more with the start script, I was able to automate sending a notification to the UI, using
+another 3d party plugin ([API Notifications]). *(I was surprised to find that there was no built-in API endpoint
+to create a notification, why???)* This also requires an application key to be provided to the script *(Global API
+keys are deprecated and will be removed in OctoPrint v2.x)*.
+This creates a much nicer user experience when you inevitably forget to turn on your camera before a print :)
+
+Here are the changes required to the `~/octolapse-scripts/before-print-start.sh` script:
+
+```diff
+--- before-print-start.sh       2025-08-03 17:36:18.023032893 -0700
++++ before-print-start.sh       2025-08-03 17:40:35.574080875 -0700
+@@ -14,8 +14,27 @@
+ #            Run `gphoto --list-files` to determine the correct path for images.
+
+ CAMERA_FOLDER="/store_00020001/DCIM/100CANON"
++OCTOPRINT_URL="http://localhost:5000"
++OCTOPRINT_API_KEY="<API_KEY>"
+
+
++# Check if any cameras are connected
++# If not, send an error notification to the OctoPrint UI via the OctoPrint-API-Notifications plugin
++if ! gphoto2 --auto-detect | grep -q '[0-9]'; then
++  echo "[!] No camera detected; sending notification"
++
++  curl -s -X POST "${OCTOPRINT_URL}/api/plugin/api_notifications" \
++    -H "Content-Type: application/json" \
++    -H "X-Api-Key: ${OCTOPRINT_API_KEY}" \
++    -d '{
++      "command": "notify",
++      "message": "No external camera was detected! Please check the USB connection and ensure that the camera is on!",
++      "title": "No camera detected!",
++      "type": "error",
++      "persist": true
++    }'
++fi
++
+ echo "[-] Camera info:"
+ gphoto2 --auto-detect --summary --storage-info
+```
+
+And here is how the final result looks like from the OctoPrint UI:
+
+<MDXImage src={import("./custom-error-notif.png")} alt="The custom error notification"/>
+
+These notifications could really be used for any sort of task that isn't directly implemented as an OctoPrint
+plugin, such as background processes, automated cron jobs, and much more if necessary. Of particular note is the
+`"persist": true` property on the payload, which pins the message to the UI until it is manually dismissed. This means
+that these notifications won't just \*disappear\* if you don't acknowledge them.
+
+[//]  # (mention the ac power adapter)
+
+[//]: # (@formatter:off)
+[OctoPrint]: https://octoprint.org/
+[Octolapse]: https://plugins.octoprint.org/plugins/octolapse/
+[API Notifications]: https://plugins.octoprint.org/plugins/api_notifications/
+
+[z-axis mount]: https://www.printables.com/model/1064045-mk3s-z-axis-camera-mount
+
+[Jeff Geerling]: https://www.youtube.com/c/JeffGeerling
