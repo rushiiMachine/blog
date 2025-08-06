@@ -37,13 +37,18 @@ function switchScheme(newMode: LIGHT_DARK_MODE) {
 }
 
 function toggleScheme() {
-	let i = 0;
-	for (; i < seq.length; i++) {
-		if (seq[i] === mode) {
-			break;
-		}
-	}
-	switchScheme(seq[(i + 1) % seq.length]);
+  switch (mode) {
+    case "light":
+      switchScheme("dark");
+      break;
+		case "dark":
+      switchScheme("light");
+      break;
+		case "auto":
+      const darkModePreference = window.matchMedia("(prefers-color-scheme: dark)");
+      switchScheme(darkModePreference ? "light" : "dark");
+      break;
+  }
 }
 
 function showPanel() {
