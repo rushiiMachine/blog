@@ -1,0 +1,33 @@
+---
+import type { ImageMetadata } from "astro";
+
+interface Props {
+    src: typeof import("*.mp4");
+    alt?: string;
+    width?: number;
+    height?: number;
+    poster?: ImageMetadata,
+    class?: string;
+}
+
+const {
+    src: { default: src },
+    alt = "",
+    width,
+    height,
+    poster,
+    class: className,
+} = Astro.props;
+---
+
+<div class:list={["flex justify-center", className]}>
+	<div class:list={["transition absolute pointer-events-none"]}/>
+	<video muted autoplay loop
+	       poster={poster?.src}
+	       width={width}
+	       height={height}
+	       class="rounded-lg">
+		<source type="video/mp4" src={src}/>
+        {alt}
+	</video>
+</div>
