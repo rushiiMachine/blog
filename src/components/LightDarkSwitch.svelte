@@ -37,18 +37,21 @@ function switchScheme(newMode: LIGHT_DARK_MODE) {
 }
 
 function toggleScheme() {
-  switch (mode) {
-    case "light":
-      switchScheme("dark");
-      break;
+	switch (mode) {
+		case "light":
+			switchScheme("dark");
+			break;
 		case "dark":
-      switchScheme("light");
-      break;
-		case "auto":
-      const darkModePreference = window.matchMedia("(prefers-color-scheme: dark)");
-      switchScheme(darkModePreference ? "light" : "dark");
-      break;
-  }
+			switchScheme("light");
+			break;
+		case "auto": {
+			const darkModePreference = window.matchMedia(
+				"(prefers-color-scheme: dark)",
+			);
+			switchScheme(darkModePreference ? "light" : "dark");
+			break;
+		}
+	}
 }
 
 function showPanel() {
