@@ -6,6 +6,7 @@ export const th: Translation = {
 	[Key.about]: "เกี่ยวกับ",
 	[Key.archive]: "คลัง",
 	[Key.search]: "ค้นหา",
+	[Key.notFound]: "404 ไม่พบหน้านี้ :(",
 
 	[Key.tags]: "ป้ายกำกับ",
 	[Key.categories]: "หมวดหมู่",
@@ -31,6 +32,7 @@ export const th: Translation = {
 	[Key.systemMode]: "ตามระบบ",
 
 	[Key.more]: "ดูเพิ่ม",
+	[Key.goHome]: "กลับหน้าหลัก",
 
 	[Key.author]: "ผู้เขียน",
 	[Key.publishedAt]: "เผยแพร่เมื่อ",

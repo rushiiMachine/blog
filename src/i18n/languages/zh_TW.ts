@@ -6,6 +6,7 @@ export const zh_TW: Translation = {
 	[Key.about]: "關於",
 	[Key.archive]: "彙整",
 	[Key.search]: "搜尋",
+	[Key.notFound]: "404 找不到頁面 :(",
 
 	[Key.tags]: "標籤",
 	[Key.categories]: "分類",
@@ -31,6 +32,7 @@ export const zh_TW: Translation = {
 	[Key.systemMode]: "跟隨系統",
 
 	[Key.more]: "更多",
+	[Key.goHome]: "回到首頁",
 
 	[Key.author]: "作者",
 	[Key.publishedAt]: "發佈於",

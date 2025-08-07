@@ -6,6 +6,7 @@ export const es: Translation = {
 	[Key.about]: "Sobre mí",
 	[Key.archive]: "Archivo",
 	[Key.search]: "Buscar",
+	[Key.notFound]: "404 No encontrado :(",
 
 	[Key.tags]: "Etiquetas",
 	[Key.categories]: "Categorías",
@@ -31,6 +32,7 @@ export const es: Translation = {
 	[Key.systemMode]: "Sistema",
 
 	[Key.more]: "Más",
+	[Key.goHome]: "Ir al inicio",
 
 	[Key.author]: "Autor",
 	[Key.publishedAt]: "Publicado el",

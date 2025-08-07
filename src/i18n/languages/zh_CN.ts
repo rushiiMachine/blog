@@ -6,6 +6,7 @@ export const zh_CN: Translation = {
 	[Key.about]: "关于",
 	[Key.archive]: "归档",
 	[Key.search]: "搜索",
+	[Key.notFound]: "404 未找到页面 :(",
 
 	[Key.tags]: "标签",
 	[Key.categories]: "分类",
@@ -31,6 +32,7 @@ export const zh_CN: Translation = {
 	[Key.systemMode]: "跟随系统",
 
 	[Key.more]: "更多",
+	[Key.goHome]: "返回首页",
 
 	[Key.author]: "作者",
 	[Key.publishedAt]: "发布于",

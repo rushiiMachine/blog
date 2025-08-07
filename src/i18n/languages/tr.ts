@@ -6,6 +6,7 @@ export const tr: Translation = {
 	[Key.about]: "Hakkında",
 	[Key.archive]: "Arşiv",
 	[Key.search]: "Ara",
+	[Key.notFound]: "404 Bulunamadı :(",
 
 	[Key.tags]: "Taglar",
 	[Key.categories]: "Katagoriler",
@@ -31,6 +32,7 @@ export const tr: Translation = {
 	[Key.systemMode]: "Sistem",
 
 	[Key.more]: "Daha Fazla",
+	[Key.goHome]: "Ana Sayfaya Dön",
 
 	[Key.author]: "Yazar",
 	[Key.publishedAt]: "Yayınlanma:",

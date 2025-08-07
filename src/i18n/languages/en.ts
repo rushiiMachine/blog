@@ -6,6 +6,7 @@ export const en: Translation = {
 	[Key.about]: "About",
 	[Key.archive]: "Archive",
 	[Key.search]: "Search",
+	[Key.notFound]: "404 Not Found :(",
 
 	[Key.tags]: "Tags",
 	[Key.categories]: "Categories",
@@ -31,6 +32,7 @@ export const en: Translation = {
 	[Key.systemMode]: "System",
 
 	[Key.more]: "More",
+	[Key.goHome]: "Go Home",
 
 	[Key.author]: "Author",
 	[Key.publishedAt]: "Published at",

@@ -6,6 +6,7 @@ export const vi: Translation = {
 	[Key.about]: "Giới thiệu",
 	[Key.archive]: "Kho bài",
 	[Key.search]: "Tìm kiếm",
+	[Key.notFound]: "404 Không Tìm Thấy :(",
 
 	[Key.tags]: "Thẻ",
 	[Key.categories]: "Danh mục",
@@ -31,6 +32,7 @@ export const vi: Translation = {
 	[Key.systemMode]: "Hệ thống",
 
 	[Key.more]: "Thêm",
+	[Key.goHome]: "Về Trang Chủ",
 
 	[Key.author]: "Tác giả",
 	[Key.publishedAt]: "Đăng vào lúc",

@@ -3,6 +3,7 @@ enum I18nKey {
 	about = "about",
 	archive = "archive",
 	search = "search",
+	notFound = "notFound",
 
 	tags = "tags",
 	categories = "categories",
@@ -28,6 +29,7 @@ enum I18nKey {
 	systemMode = "systemMode",
 
 	more = "more",
+	goHome = "goHome",
 
 	author = "author",
 	publishedAt = "publishedAt",

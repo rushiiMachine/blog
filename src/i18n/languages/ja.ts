@@ -6,6 +6,7 @@ export const ja: Translation = {
 	[Key.about]: "About",
 	[Key.archive]: "Archive",
 	[Key.search]: "検索",
+	[Key.notFound]: "404 見つかりませんでした :(",
 
 	[Key.tags]: "タグ",
 	[Key.categories]: "カテゴリ",
@@ -31,6 +32,7 @@ export const ja: Translation = {
 	[Key.systemMode]: "システム",
 
 	[Key.more]: "もっと",
+	[Key.goHome]: "ホームに戻る",
 
 	[Key.author]: "作者",
 	[Key.publishedAt]: "公開日",
