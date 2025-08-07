@@ -37,6 +37,7 @@ export const siteConfig: SiteConfig = {
 		//   sizes: '32x32',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
 		// }
 	],
+	sourceUrl: "https://github.com/rushiiMachine/blog",
 };
 
 export const navBarConfig: NavBarConfig = {
@@ -45,8 +46,8 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Archive,
 		LinkPreset.About,
 		{
-			name: "GitHub",
-			url: "https://github.com/rushiiMachine/blog", // Internal links should not include the base path, as it is automatically added
+			name: "Main",
+			url: "https://rushii.dev", // Internal links should not include the base path, as it is automatically added
 			external: true, // Show an external link icon and will open in a new tab
 		},
 	],
