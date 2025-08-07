@@ -1,3 +1,5 @@
+@import url(./main.css);
+
 .custom-md {
     h1 {
         @apply text-3xl;
@@ -117,5 +119,4 @@
         overflow-x: auto;
         margin: 1em 0;
     }
-    
 }
