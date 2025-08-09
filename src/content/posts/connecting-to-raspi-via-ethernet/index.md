@@ -20,7 +20,9 @@ Ethernet port on my RPi 3B. After pulling out an Ethernet cable and hooking it u
 laptop did not host a DHCP server, there was no address assigned to my RPi.
 
 This is where most guides diverge; usually, there's two approaches that are recommended:
-- Configuring a DHCP server such as `dhcpcd` for the RPi to automatically be assigned an address
+- Configuring a DHCP server such as `dhcpcd` for the RPi to automatically be assigned an address. Unfortuantely, I don't want to spend
+  time configuring it and then have to clean it up afterwards. That would mean I have to do it every single time I encounter such
+  a scenario.
 - Statically assigning an IP to the RPi. The problem with this is that I don't have access to a shell in the
   first place, which makes this impossible.
 
@@ -60,11 +62,9 @@ $ sudo pacman -S tcpdump
 
 3. (Re)connect the Ethernet cable to the RPi
 
-4. Wait and observe the incoming traffic, taking note of the address on incoming ARP announcements.
+4. Wait and observe the incoming traffic, taking note of the address on incoming announcements.
 
 ```shell
-$ sudo tcpdump -i <interface> inbound
-
 00:58:44.366691 IP 0.0.0.0.bootpc > 255.255.255.255.bootps: BOOTP/DHCP, Request from b8:27:eb:e1:9d:f6 (oui Unknown), length 342
 00:58:44.576478 IP6 :: > ff02::16: HBH ICMP6, multicast listener report v2, 2 group record(s), length 48
 00:58:45.136588 IP6 fe80::2c65:ff96:60ca:4b30 > ff02::16: HBH ICMP6, multicast listener report v2, 2 group record(s), length 48
@@ -87,9 +87,9 @@ $ sudo tcpdump -i <interface> inbound
 00:58:57.141116 IP6 fe80::2c65:ff96:60ca:4b30 > ff02::2: ICMP6, router solicitation, length
 ```
 
-*(mDNS-related traffic omitted for brevity)*
+*(mDNS traffic omitted for brevity)*
 
-There's two lines that are of interest to us:
+There's two lines that are of interest:
 
 ```shell
 00:58:53.140167 IP6 fe80::2c65:ff96:60ca:4b30 > ff02::2: ICMP6, router solicitation, length 16
@@ -105,7 +105,7 @@ My RPi 3B that utilized `isc-dhcp-client` did not assign itself a local-link IPv
 running `dhcpcd` did do so.
 :::
 
-5. Connect to the RPi over ssh. When using using the RPi's IPv6 local-link address, the interface it's accessible over also
+1. Connect to the RPi over ssh. When using using the RPi's IPv6 local-link address, the interface it's accessible over also
    needs to be specified.
 	- `ssh pi@169.254.233.103`
 	- `ssh pi@<ipv6>%<interface>`
