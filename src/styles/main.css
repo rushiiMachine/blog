@@ -112,6 +112,10 @@
     }
 }
 
+html {
+    overscroll-behavior-y: none;
+}
+
 .custom-md img, #post-cover img, .custom-md video {
     @apply cursor-zoom-in
 }
