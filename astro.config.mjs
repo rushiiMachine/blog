@@ -61,6 +61,7 @@ export default defineConfig({
 				"fa6-solid": ["*"],
 			},
 		}),
+        // TODO: OverlayScrollbars in codeblocks
 		expressiveCode({
 			themes: [expressiveCodeConfig.darkTheme, expressiveCodeConfig.lightTheme],
 			useDarkModeMediaQuery: false,
