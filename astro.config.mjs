@@ -5,9 +5,9 @@ import tailwind from "@astrojs/tailwind";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import swup from "@swup/astro";
-import { defineConfig } from "astro/config";
 import expressiveCode from "astro-expressive-code";
 import icon from "astro-icon";
+import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeComponents from "rehype-components"; /* Render the custom directive content */
 import rehypeKatex from "rehype-katex";
@@ -17,6 +17,7 @@ import remarkGithubAdmonitionsToDirectives from "remark-github-admonitions-to-di
 import remarkMath from "remark-math";
 import remarkSectionize from "remark-sectionize";
 import devtoolsJson from "vite-plugin-devtools-json";
+import glsl from "vite-plugin-glsl";
 import { expressiveCodeConfig } from "./src/config.ts";
 import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button.js";
 import { pluginLanguageBadge } from "./src/plugins/expressive-code/language-badge.ts";
@@ -61,7 +62,7 @@ export default defineConfig({
 				"fa6-solid": ["*"],
 			},
 		}),
-        // TODO: OverlayScrollbars in codeblocks
+		// TODO: OverlayScrollbars in codeblocks
 		expressiveCode({
 			themes: [expressiveCodeConfig.darkTheme, expressiveCodeConfig.lightTheme],
 			useDarkModeMediaQuery: false,
@@ -165,7 +166,10 @@ export default defineConfig({
 	},
 	vite: {
 		assetsInclude: ["**/*.mp4"],
-		plugins: [devtoolsJson()],
+		plugins: [
+			glsl(),
+			devtoolsJson(),
+		],
 		build: {
 			rollupOptions: {
 				onwarn(warning, warn) {

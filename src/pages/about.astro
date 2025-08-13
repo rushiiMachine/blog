@@ -1,7 +1,10 @@
 ---
 
 import { getEntry, render } from "astro:content";
+import starsShader from "@assets/shaders/stars.fragment.glsl";
+import DarkThemeContainer from "@components/DarkThemeContainer.svelte";
 import Markdown from "@components/misc/Markdown.astro";
+import ShaderContainer from "@components/misc/ShaderContainer.svelte";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
@@ -16,8 +19,11 @@ const { Content } = await render(aboutPost);
 ---
 <MainGridLayout title={i18n(I18nKey.about)} description={i18n(I18nKey.about)}>
     <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
-        <div class="card-base z-10 px-9 py-6 relative w-full ">
-            <Markdown class="mt-2">
+        <div class="card-base relative w-full z-10">
+            <DarkThemeContainer client:load>
+                <ShaderContainer client:only fragmentShader={starsShader} class="w-full h-full absolute -z-[50]"/>
+            </DarkThemeContainer>
+            <Markdown class="mt-2 px-9 py-6">
                 <Content />
             </Markdown>
         </div>

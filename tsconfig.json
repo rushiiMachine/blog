@@ -7,8 +7,11 @@
     "declaration": true,
     "plugins": [
       {
-        "name": "@astrojs/ts-plugin"
+        "name": "@astrojs/ts-plugin",
       }
+    ],
+    "types": [
+        "vite-plugin-glsl/ext",
     ],
     "paths": {
       "@components/*": ["src/components/*"],

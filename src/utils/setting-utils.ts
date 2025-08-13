@@ -49,7 +49,6 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
 			if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
 				document.documentElement.classList.add("dark");
 				setExpressiveCodeTheme(expressiveCodeConfig.darkTheme);
-				document.documentElement.setAttribute("data-theme", "github-dark");
 			} else {
 				document.documentElement.classList.remove("dark");
 				setExpressiveCodeTheme(expressiveCodeConfig.lightTheme);
