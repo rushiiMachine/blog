@@ -110,6 +110,10 @@
     .btn-regular-dark.success {
         @apply bg-[oklch(0.75_0.14_var(--hue))] dark:bg-[oklch(0.75_0.14_var(--hue))]
     }
+
+    .email-separator {
+        display: none;
+    }
 }
 
 html {
