@@ -92,6 +92,27 @@
         }
     }
 
+    /* Default expressive-code scrollbar styling only supports webkit */
+    @supports (-moz-appearance:none) {
+        .expressive-code figure {
+            background-color: var(--codeblock-bg);
+            padding-bottom: 12px;
+        }
+
+        .expressive-code pre {
+            scrollbar-width: thin;
+            scrollbar-color: var(--scrollbar-bg) var(--codeblock-bg);
+
+
+            &:hover {
+                scrollbar-color: var(--scrollbar-bg-hover) var(--codeblock-bg);
+            }
+
+            &:active {
+                scrollbar-color: var(--scrollbar-bg-active) var(--codeblock-bg);
+            }
+        }
+    }
 
     ul, ol {
         li::marker {
