@@ -3,10 +3,15 @@
 
 interface Props {
 	fragmentShader: string;
+	followReducedAnimation?: boolean;
 	class?: string;
 }
 
-let { fragmentShader, class: className }: Props = $props();
+let {
+	fragmentShader,
+	followReducedAnimation: followReducedMotion = true,
+	class: className,
+}: Props = $props();
 
 let canvas: HTMLCanvasElement;
 
@@ -14,6 +19,17 @@ $effect(() => {
 	let gl: WebGLRenderingContext;
 	let u_resolution: WebGLUniformLocation;
 	let u_time: WebGLUniformLocation;
+
+	if (
+		followReducedMotion &&
+		window.matchMedia("(prefers-reduced-motion: reduce)").matches
+	) {
+		return;
+	}
+
+	// Make internal canvas size match element size
+	canvas.width = canvas.offsetWidth;
+	canvas.height = canvas.offsetHeight;
 
 	function init() {
 		gl = canvas.getContext("webgl")!;
