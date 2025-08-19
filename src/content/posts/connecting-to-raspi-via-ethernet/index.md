@@ -1,6 +1,6 @@
 ---
 title: "Connecting to a Raspberry Pi over Ethernet"
-description: "I was in too much of a rush to do it the right way"
+description: "I was in too much of a rush to do it the \"right way\""
 published: 2025-08-07
 updated: 2025-08-09
 draft: false
@@ -9,7 +9,7 @@ tags: [ "Networking", "Raspberry Pi" ]
 
 # Introduction
 
-Sometimes there are times where a Raspberry Pi just isn't accessible over WiFi; the connection details could have been misconfigured,
+There's times where a Raspberry Pi just isn't accessible over WiFi; the connection details could have been misconfigured,
 the region might've never been set, or perhaps you have no idea why it broke. Either way, now it requires a physical connection to
 reconfigure it. But that becomes challenging when your RPi is already mounted in such a way that makes getting a wired network connection
 very difficult. This is typically where you'd hook up a monitor and keyboard, but I was too lazy to do that.
@@ -20,7 +20,7 @@ Ethernet port on my RPi 3B. After pulling out an Ethernet cable and hooking it u
 laptop did not host a DHCP server, there was no address assigned to my RPi.
 
 This is where most guides diverge; usually, there's two approaches that are recommended:
-- Configuring a DHCP server such as `dhcpcd` for the RPi to automatically be assigned an address. Unfortuantely, I don't want to spend
+- Configuring a DHCP server such as `dhcpcd` for the RPi to automatically be assigned an address. Unfortunately, I don't want to spend
   time configuring it and then have to clean it up afterwards. That would mean I have to do it every single time I encounter such
   a scenario.
 - Statically assigning an IP to the RPi. The problem with this is that I don't have access to a shell in the
@@ -36,7 +36,7 @@ of the presence of an explicitly assigned address. The usual way to find this ad
 
 1. Take note of your machine's Ethernet interface via `ip addr`
 
-```
+```shellsession
 $ ip addr
 
 4: enp195s0f3u1: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 1500 qdisc fq_codel state DOWN group default qlen 1000
@@ -51,20 +51,22 @@ Usually it's something along the lines of `eth0`, but in my case it was `enp195s
 2. Run `tcpdump` to capture incoming packets on that interface:
 
 ```shell
-$ sudo tcpdump -i <interface> inbound
+sudo tcpdump -i <interface> inbound
 ```
 
 If you don't already have `tcpdump` installed:
 ```shell
-$ sudo apt install tcpdump
-$ sudo pacman -S tcpdump
+sudo apt install tcpdump
+sudo pacman -S tcpdump
 ```
 
 3. (Re)connect the Ethernet cable to the RPi
 
 4. Wait and observe the incoming traffic, taking note of the address on incoming announcements.
 
-```shell
+```shellsession
+$ sudo tcpdump -i <interface> inbound
+
 00:58:44.366691 IP 0.0.0.0.bootpc > 255.255.255.255.bootps: BOOTP/DHCP, Request from b8:27:eb:e1:9d:f6 (oui Unknown), length 342
 00:58:44.576478 IP6 :: > ff02::16: HBH ICMP6, multicast listener report v2, 2 group record(s), length 48
 00:58:45.136588 IP6 fe80::2c65:ff96:60ca:4b30 > ff02::16: HBH ICMP6, multicast listener report v2, 2 group record(s), length 48
@@ -91,7 +93,7 @@ $ sudo pacman -S tcpdump
 
 There's two lines that are of interest:
 
-```shell
+```shellsession
 00:58:53.140167 IP6 fe80::2c65:ff96:60ca:4b30 > ff02::2: ICMP6, router solicitation, length 16
 00:58:56.699392 ARP, Request who-has 169.254.233.103 tell 169.254.233.103, length 46
 ```

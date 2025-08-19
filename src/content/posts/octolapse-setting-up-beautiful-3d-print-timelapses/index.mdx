@@ -9,17 +9,14 @@ tags: [ "OctoPrint", "Octolapse", "Cameras" ]
 draft: true
 ---
 
-
-
-
 import MDXImage from "../../../components/mdx/MDXImage.astro";
 import MDXLoopingVideo from "../../../components/mdx/MDXLoopingVideo.astro";
 import ImageWrapper from "../../../components/misc/ImageWrapper.astro";
 
 
-I recently got into 3d printing (for realsies this time) and had the inkling to try making a few timelapses
+I recently got into 3D printing (for realsies this time) and had the inkling to try making a few timelapses
 of the parts I was printing, as part of my upcoming NAS case. I had already set up [OctoPrint], a remote web interface
-for my 3d printer that runs on an external device, which in my case was a Raspberry Pi 3B. I was partly inspired to do
+for my 3D printer that runs on an external device, which in my case was a Raspberry Pi 3B. I was partly inspired to do
 this project by this beautiful timelapse created by [Jeff Geerling] in his
 [blog post](https://www.jeffgeerling.com/blog/2021/beautiful-3d-print-time-lapses-my-nikon-d700-and-octolapse):
 
@@ -38,7 +35,7 @@ the quality was actually atrocious and completely unusable.
           alt="A sample image from the low quality webcam"
           width={640}/>
 
-[//]: # (insert an image of the camera mounted)
+{/* insert an image of the camera mounted */}
 
 Despite this, I still decided to try running a timelapse using the built-in timelapse functionality in OctoPrint.
 After having configured the webcam within OctoPrint (available as a physical `/dev/videoN` device through the
@@ -90,9 +87,7 @@ must be wiped from the camera's SD card in order for it to download the correct 
 to remove this requirement entirely, by storing the last taken image's number and downloading all images with a number
 higher than it after the print finishes.
 
-`~/octolapse-scripts/before-print-start.sh`:
-
-```shell
+```shell title="~/octolapse-scripts/before-print-start.sh"
 #!/bin/bash
 
 # IMPORTANT: This folder will likely vary for each camera.
@@ -126,9 +121,7 @@ START_NUM=$(($PREV_NUM + 1))
 echo $START_NUM > /tmp/octolapse-start-num
 ```
 
-`~/octolapse-scripts/aquire-snapshot.sh`:
-
-```shell
+```shell title="~/octolapse-scripts/aquire-snapshot.sh"
 #!/bin/bash
 
 # Put the arguments sent by Octolapse into variables for easy use
@@ -149,9 +142,7 @@ shopt -s nullglob
 gphoto2 --auto-detect --trigger-capture
 ```
 
-`~/octolapse-scripts/before-render.sh`:
-
-```shell
+```shell title="~/octolapse-scripts/before-render.sh"
 #!/bin/bash
 
 # IMPORTANT: This folder will likely vary for each camera.
@@ -269,7 +260,7 @@ plugin, such as background processes, automated cron jobs, and much more if nece
 `"persist": true` property on the payload, which pins the message to the UI until it is manually dismissed. This means
 that these notifications won't just \*disappear\* if you don't acknowledge them.
 
-[//]  # (mention the ac power adapter)
+{/* mention the ac power adapter */}
 
 [//]: # (@formatter:off)
 [OctoPrint]: https://octoprint.org/
