@@ -1,6 +1,6 @@
 ---
 title: "Connecting to a Raspberry Pi over Ethernet"
-description: "I was in too much of a rush to do it the \"right way\""
+description: "I've locked myself out so many times from a Raspberry Pi"
 published: 2025-08-07
 updated: 2025-08-09
 draft: false

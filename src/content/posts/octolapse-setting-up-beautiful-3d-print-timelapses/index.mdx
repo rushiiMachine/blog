@@ -1,9 +1,8 @@
 ---
 title: "Octolapse: Setting up beautiful 3D print timelapses"
 description: "Connecting a DSLR camera to a Raspberry Pi with Octolapse to generate clean 3D printing timelapses"
-published: 2025-08-04
-updated: 2025-08-04
-#image: ./aliucord.svg
+published: 2025-10-17
+updated: 2025-10-17
 category: "3D Printing"
 tags: [ "OctoPrint", "Octolapse", "Cameras" ]
 draft: true
@@ -17,8 +16,7 @@ import ImageWrapper from "../../../components/misc/ImageWrapper.astro";
 I recently got into 3D printing (for realsies this time) and had the inkling to try making a few timelapses
 of the parts I was printing, as part of my upcoming NAS case. I had already set up [OctoPrint], a remote web interface
 for my 3D printer that runs on an external device, which in my case was a Raspberry Pi 3B. I was partly inspired to do
-this project by this beautiful timelapse created by [Jeff Geerling] in his
-[blog post](https://www.jeffgeerling.com/blog/2021/beautiful-3d-print-time-lapses-my-nikon-d700-and-octolapse):
+this project by this beautiful timelapse created by [Jeff Geerling] in his [blog post on Octolapse]:
 
 <ImageWrapper
     src="https://www.jeffgeerling.com/sites/default/files/images/pi-rack-tray-3d-print-octolapse.gif"
@@ -26,20 +24,21 @@ this project by this beautiful timelapse created by [Jeff Geerling] in his
     width={500}
     height={282}/>
 
+## Testing with a webcam
+
 My first attempt to create a timelapse started with printing a [z-axis mount] to attach to my Prusa MK3S+ printer.
 I dug through our boxes of old wires and electronics, and found an ancient webcam from 2009! It boasted 2 big and
-beautiful megapixels, with a maximum resolution of 1600x1200! What a steal! But as you could probably guess, in reality
-the quality was actually atrocious and completely unusable.
+beautiful megapixels, with a maximum resolution of 1600x1200! Amazing! As I expected, the quality was pretty dogshit.
 
 <MDXImage src={import("./webcam-sample.jpg")}
           alt="A sample image from the low quality webcam"
           width={640}/>
 
-{/* insert an image of the camera mounted */}
+## Experimenting with a DSLR
 
 Despite this, I still decided to try running a timelapse using the built-in timelapse functionality in OctoPrint.
 After having configured the webcam within OctoPrint (available as a physical `/dev/videoN` device through the
-`video4linux` driver), I enabled timelapses, and let a few print jobs go. While the result was expectedly completely
+`video4linux` driver), I enabled timelapses, and let a few print jobs go. While the result was, unsurprisingly, completely
 unusable, there were a few major things I learned from this attempt:
 
 1. Mounting a timelapse camera onto the z-axis (so that it will move with the printer) was not a good idea.
@@ -54,36 +53,36 @@ What's more, is that I realized that the built-in timelapse functionality is lac
 
 1. Centering: There was no way to move the extruder to one spot for each frame! This resulted in the extruder jumping
 all over the entire print, making for a messy timelapse.
-2. Capturing: This relied on a webcam streaming in video capture mode (not a single-shot crisp image!), which makes
-webcams particularly unsuitable for this task.
+2. Capturing: This relied on a webcam streaming in video capture mode (not a single-shot, crisp, image!), which makes
+live webcams particularly unsuitable for this task.
 
-<br/>
-
-Fortunately, I already had the most expensive component: a pretty good DSLR camera (borrowed from a family member that
-never used it :D). After quickly taking a few pictures by hand I realized that this would be perfect for this task,
-perhaps even overkill. The rest of the challenge for this project from now on would be connecting it to Octolapse.
+Fortunately, I already had access to a decent DSLR camera (borrowed from a family member that never used it).
+Taking a few pictures with it confirmed that it would be perfectly suited for this, perhaps even overkill.
+The rest of the challenge for this project from now on would be connecting it to Octolapse.
 
 Lucky for me, Octolapse already provides multiple guides for connecting DSLR cameras:
 
 - [Configuring a DSLR](https://github.com/FormerLurker/Octolapse/wiki/V0.4---Configuring-a-DSLR)
 - [Configuring a DSLR with Deferred Download](https://github.com/FormerLurker/Octolapse/wiki/V0.4---Configuring-a-DSLR-With-Deferred-Download)
 
-*I also went on a tangent trying to get a live video stream from the camera.
+:::note
+I also went on a tangent trying to get a live video stream from the camera.
 [webcamize](https://github.com/cowtoolz/webcamize) turned out to do this job well. But for the reasons I mentioned
-earlier, a timelapse from a video stream would not be ideal for this project, not to mention that the video stream was
+earlier, a timelapse from a video stream would not be ideal for this, not to mention that the video stream was
 limited to the resolution of the preview screen of the camera (much, much less than what the camera was capable of).
 webcamize also consumed 70% of a core at all times while it was running (probably due to the video loopback adapter)
-which was horrible. I abandoned this feat once I found about the official guides from Octolapse*
+which was horrible. I abandoned this idea once I found about the official DSLR guides from Octolapse*
+:::
 
-<br/>
+## Main setup
 
-The main gist of connecting a DSLR to Octolapse is using `gphoto2`, a camera control utility, to capture images just
-as if I were pressing the shutter button. Octolapse recommends to avoid immediately downloading images after taking
-them, as the extra time spent waiting could result in globs on the extruder and ruin your print. I took the same
-route and downloaded all the images just before the rendering took place.
+The main gist of connecting a DSLR to Octolapse is using `gphoto2`, a USB camera control utility, to capture images just
+as if I were pressing the shutter button. Octolapse recommends to avoid immediately downloading images right after capture,
+as the extra time spent waiting could result in plastic globs on the extruder, ruining the print. I took this advice
+and made my setup download all images after the print has finished, but before rendering.
 
-While the scripts provided in the 2nd guide will work fine, they have one major drawback, that being that all images
-must be wiped from the camera's SD card in order for it to download the correct images. I tweaked them until I was able
+While the scripts provided in the 2nd official guide will work fine, they have one major drawback, that being that all images
+must be wiped from the camera's SD card in order for it to download the correct images. I tweaked it until I was able
 to remove this requirement entirely, by storing the last taken image's number and downloading all images with a number
 higher than it after the print finishes.
 
@@ -192,30 +191,53 @@ for f in *.JPG *.jpg *.JPEG *.jpeg; do
         i=$((i+1))
 done
 ```
-
-My first attempt with this new camera setup turned out to be quite good!
+After configuring Octolapse to invoke these scripts, my first attempt with this new camera setup turned out to be quite good!
 
 <MDXLoopingVideo
     src={await import("./first-timelapse-attempt.mp4")}
     preview={await import("./first-timelapse-attempt.preview.jpg")}
     alt="My first good quality print timelapse"/>
 
-However, while testing I encountered another issue I kept running into: the camera's auto power-off functionality. While
+After adjusting my camera settings a bit, and turning off:
+- Auto stabilization
+- Autofocus
+- Auto exposure
+- Auto flash compensation
+
+This removed much of the visual artifacts from the previous timelapse, and made for a nearly perfect timelapse!
+
+<MDXLoopingVideo
+    src={await import("./second-timelapse-attempt.mp4")}
+    preview={await import("./second-timelapse-attempt.preview.jpg")}
+    alt="My nearly perfect timelapse"/>
+
+The lighting still seems to constantly change with each frame, but I don't think I can improve upon this much, without
+getting a bright studio light shining down onto my printer. Oh well, it is what it is.
+
+However, my print bed still seems to be moving throughout the timelapse, which I wasn't able to fix.
+I assume this could be caused by mistimed snapshots happening before the bed finishes moving, or perhaps that my
+printer is just super inaccurate. If this was a CoreXY printer, such that the print bed is fixed in place on the
+x/y axes, then this issue wouldn't exist. Either way, the timelapse is good enough for me, so I didn't bother
+investigating this further.
+
+## Error notifications
+
+While testing, I encountered another issue I kept running into: the camera's auto power-off functionality. While
 I was able to manually turn this off in the camera's settings, I was unable to automate this via `gphoto2` for some
-reason. This setting *was* marked as writable, but this wasn't the first one I encountered that also behaved like this.
-This means that there would be no way to automatically turn off my camera once my print finishes. Unfortunate, but
+reason. This setting was marked as writable, but the camera refused commands to write to this settings.
+This means that there would be no way to automatically turn off the camera once a print finishes. Unfortunate, but
 ultimately not that big of an issue.
 
-However, a bigger issue was when I forgot to turn the camera *back on*! Starting a print job would spit out an
-unhelpful error notification from Octolapse, providing no indication of the actual error message:
+However, a bigger issue was when I forgot to turn the camera *on!* Starting a print job would spit out an
+unhelpful error notification from Octolapse, providing no indication of the actual error:
 
 <MDXImage src={import("./original-error-notif.png")} alt="The original error notification"/>
 
 After tinkering a bit more with the start script, I was able to automate sending a notification to the UI, using
-another 3d party plugin ([API Notifications]). *(I was surprised to find that there was no built-in API endpoint
-to create a notification, why???)* This also requires an application key to be provided to the script *(Global API
-keys are deprecated and will be removed in OctoPrint v2.x)*.
-This creates a much nicer user experience when you inevitably forget to turn on your camera before a print :)
+another 3d party plugin ([API Notifications]) for OctoPrint. I was quite surprised to find that there was no
+built-in API endpoint to create a notification, and that I needed a plugin to achieve this. Using the API
+requires an *application* key to be provided to the script as well *(Global API keys are deprecated and will be
+removed in OctoPrint v2.x)*.
 
 Here are the changes required to the `~/octolapse-scripts/before-print-start.sh` script:
 
@@ -255,14 +277,46 @@ And here is how the final result looks like from the OctoPrint UI:
 
 <MDXImage src={import("./custom-error-notif.png")} alt="The custom error notification"/>
 
-These notifications could really be used for any sort of task that isn't directly implemented as an OctoPrint
+This setup allows for a much nicer user experience when I inevitably forget to turn on my camera before a print :)
+
+These notifications could also be used for any sort of task that isn't directly run from an OctoPrint
 plugin, such as background processes, automated cron jobs, and much more if necessary. Of particular note is the
 `"persist": true` property on the payload, which pins the message to the UI until it is manually dismissed. This means
-that these notifications won't just \*disappear\* if you don't acknowledge them.
+that these notifications won't just \*disappear\* if you don't acknowledge them or get to see them initially.
 
-{/* mention the ac power adapter */}
+## Long prints
 
-[//]: # (@formatter:off)
+While my camera's battery can for quite a while, especially if I turn the screen off, it's not big enough to last an
+entire 12 hour print. Unfortunately, my camera does not support charging through the same USB port used to
+control it, and would require either swapping the battery, or using a "fake battery" adapter that just provides
+power from the wall instead.
+
+I found one compatible with my camera on eBay, but it cost $20, and I decided it just wasn't worth it for me.
+If I were doing content creation, then this would be an obvious investment, but I just don't need that.
+
+## Final words
+
+I had quite a lot of fun setting this up, and I'm pretty happy with the results I achieved. Ultimately, I don't
+think this is actually that useful to me, as I don't really have a use for such timelapses (other than showing
+them to my friends). You might find this setup much more useful.
+
+:::note
+Rendering the final timelapse with high-quality images is extremely expensive! I wasn't actually able
+to use Octolapse's on-device `libx264` renderer for longer prints, as my Raspberry Pi just ran out of RAM.
+A better solution would be to upload the images to a local server, and invoke `ffmpeg` on there via ssh.
+I haven't done this as of now, but I might try it in the future.
+
+My best workaround at the moment is to disable Octolapse rendering, and then manually pull the zipped
+images from my Raspberry Pi to a separate machine and render it with `ffmpeg`:
+
+```shell
+$ ffmpeg -y -framerate 11 -start_number 0 \
+    -i "${PREFIX}%06d.jpg" \
+    -vf "scale=1440:-2,hqdn3d=2.5:2.5:6:6" \
+    -pix_fmt yuv420p -crf 20 timelapse.mp4
+:::
+
+
 [OctoPrint]: https://octoprint.org/
 [Octolapse]: https://plugins.octoprint.org/plugins/octolapse/
 [API Notifications]: https://plugins.octoprint.org/plugins/api_notifications/
@@ -270,3 +324,4 @@ that these notifications won't just \*disappear\* if you don't acknowledge them.
 [z-axis mount]: https://www.printables.com/model/1064045-mk3s-z-axis-camera-mount
 
 [Jeff Geerling]: https://www.youtube.com/c/JeffGeerling
+[blog post on Octolapse]: https://www.jeffgeerling.com/blog/2021/beautiful-3d-print-time-lapses-my-nikon-d700-and-octolapse
