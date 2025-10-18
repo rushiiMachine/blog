@@ -15,33 +15,34 @@ If you do, eventually you will realize that you **do** actually need it again, w
 the next day, or even a few months down the road.
 
 But just buying more storage is much easier said than done. My main workstation machine had actually completely used up
-all the available SATA ports (at least, the ones that actually *worked*), and I knew that I was going to have to either
+all the available SATA ports (at least, the ones that actually **worked**), and I knew that I was going to have to either
 buy a larger drive and move all my data over, or build an entirely new NAS. One of my biggest priorities going into
 this project was my interest in setting up a home streaming server, that being a combination of [Jellyfin], [Stremio],
-managing torrents and other miscellaneous services. Given that our ISP had just recently upgraded us for free to a
-better plan, this meant that I could finally host a Minecraft server without being our up-link being saturated, and
-causing network lag. Having so many requirements meant that my priorities when picking out the components for my
-NAS/server combo was quite different from a traditional NAS build.
+managing torrents and other miscellaneous services. Given that our ISP had just recently upgraded us to a faster
+plan, this also meant I could properly host services for other people at last, without encountering network lag.
+Having so many requirements meant that my priorities when picking out the components for my NAS/server combo was quite
+different from a traditional NAS build.
 
-Please note that I don't have any prior experience to build a NAS, and as such don't really know what I am doing.
+Please note that I don't have any prior experience building a NAS, and don't really know what I am doing.
 Each component that I picked out was very specialized to my exact needs, and this shouldn't be taken as a recommendation
 for you to exactly do what I did!
 
-## Cases
+# Cases
 
 Another one of my main priorities while designing this build was ensuring that this NAS could be upgradable in the
 future. This meant that any pre-built NAS, such as from Synology, was immediately out of the question. I wanted enough
-computing power to run a myriad of services, and enough drive bays to support 100TB+ if it ever came down to it.
+computing power to run a bunch of services, and enough drive bays to support 100TB+ if it ever came down to it.
 
 Eventually, I landed on 3D printing my own case. Pre-made cases, such as the [Fractal Design's Define] series was just
 too expensive when a much cheaper alternative was available. We had previously bought a Prusa MK3S+ printer a couple
-of years prior, and I hadn't really used it enough to justify the purchase. This way, not only would I minimize costs,
-but it would also give me a reason to finally really *get into* 3D printing.
+of years prior, and I hadn't really used it enough to justify the price yet. This way, not only would I minimize costs,
+but it would also give me a reason to finally **actually** get into 3D printing. (It was worth it!)
 
 After searching around for a bit, I eventually decided on printing this [12-Bay ATX NAS case] design by [makerunit].
-The reason behind choosing an ATX build is that I would be able to reuse my current hardware from my workstation, that
-was also an ATX build. This would also give me enough flexibility to potentially add in a GPU to accelerate transcoding
-(AMD's CPUs don't support Intel's QuickSync), a 10GB NIC, HBA cards, and still give me space for things far into the future.
+The reason behind choosing an ATX build is that ITX and micro-ATX motherboards just have too few PCIE slots for what I
+looking, and on top of that have a big price markup. Choosing ATX would give me enough flexibility to add
+in a GPU to accelerate transcoding in the future (AMD CPUs don't support Intel's QuickSync), a 10GB NIC, HBA cards,
+and more if I wanted to in the future.
 
 <iframe width="560" height="315"
         src="https://www.youtube-nocookie.com/embed/h7FyS37KHms"
@@ -52,16 +53,31 @@ was also an ATX build. This would also give me enough flexibility to potentially
         allowfullscreen/>
 
 This part of the project ironically took the longest, mostly because of actually having to learn how to print and
-maintain my printer...
+maintain my 3D printer.
 
-[//]  # (https://www.youtube.com/watch?v=h7FyS37KHms)
+# Hardware
 
-[Jellyfin]  https://jellyfin.org/
+I went through a **lot** of different options here. From reusing my current hardware (and upgrading my desktop
+instead), buying old hardware, and even scavenging
 
-[Stremio]  https://www.stremio.com/downloads
+Ultimately, I wrote down my requirements and then started to evaluate all the choices:
+- ECC (Error-Correcting Code) RAM was something I wouldn't budge on. I had heard stories of memory corruption
+  ruining ZFS pools, and I was not willing to take this risk. This requirement eliminated all consumer Intel CPUs,
+  leaving me with enterprise Xeons, Threadrippers, Epyc, and Ryzen CPUs.
+- I wanted enough flexibility to be able to expand my pool to 100TB if necessary in the future. With the case I
+  picked having 12 bays, I would most likely need at least one PCIE slot dedicated to an HBA card to be able to 
+  populate all the bays.
+- Having so much storage would require a corresponding amount of RAM, at 1GB of RAM per 1TB of storage due
+  to ZFS recommendations.\* This would also allow me to run more services.
 
-[Fractal Design's Define]  https://www.fractal-design.com/products/cases/define
+*Allegedly "1GB per TB" is still debated for ZFS. This might only be for when deduplication is turned
+on, which I won't be using. Either way, I'd still like the extra RAM to run other services.
+[More info](https://serverfault.com/a/958817)*
 
-[12-Bay ATX NAS case]  https://www.printables.com/model/1278847-12-bay-atx-nas-case/comments
 
-[makerunit]  https://www.youtube.com/@makerunit
+[Jellyfin]: https://jellyfin.org
+[Stremio]: https://www.stremio.com/downloads
+
+[Fractal Design's Define]: https://www.fractal-design.com/products/cases/define
+[12-Bay ATX NAS case]: https://www.printables.com/model/1278847-12-bay-atx-nas-case/comments
+[makerunit]: https://www.youtube.com/@makerunit

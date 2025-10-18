@@ -39,17 +39,16 @@ patch apps, without requiring root, that have much less drawbacks!
 
 # LSPlant
 
-These exact same patches on the VM can be run without needing to inject the Zygote process.
+These exact same patches to the VM can be applied without needing to inject into the root Zygote process.
 
-Since all apps are sandboxed under one user, everything is accessible; the VM, bytecode, and native libs are even loaded under the same
-process! Anything can be modified at runtime, including the Android Runtime (ART) itself! ART handles executing bytecode, which is what
-allows apps to even run. By hooking into and modifying the internals of the loaded VM (internally called `libart`) it's possible to achive
-modifying the app's functionality at runtime.
+Since each app is sandboxed under a unique user, the app is free to modify anything accessible to the same user, including the main app process!
+This includes loaded native libraries, the Android Runtime (ART) VM, its bytecode, and so on. Since ART handles executing bytecode, by hooking
+into the internals of the loaded VM (internally called `libart`) it's possible to modify the loaded bytecode, and alter it's behavior at runtime.
 
-This is significantly made easier given that Android does not have `W^X` page protection (pages can only be writable OR executable) and
-code page signing (unlike iOS, where you can't create a `RWX` page unless you have the JIT entitlement, which is inaccessible without
-a debugger attached, or a Jailbreak). Using this freedom, it's possible to freely change the behavior of the VM itself, and all of the
-bytecode it runs!
+This is significantly made easier given that Android does not have code page signing protection, unlike iOS, where you can't create an
+executable page without the `MAP_JIT` flag, requiring the `com.apple.security.cs.allow-jit` entitlement that is only accessible when
+a debugger is attached, or when a Jailbreak grants it. With this freedom, it's possible to freely change the behavior of the VM itself,
+and all of the bytecode it runs!
 
 # Smali Patching
 
