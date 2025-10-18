@@ -1,6 +1,8 @@
 <script lang="ts">
 /** biome-ignore-all lint/style/noNonNullAssertion: ignore */
 
+import { onMount } from "svelte";
+
 interface Props {
 	fragmentShader: string;
 	followReducedAnimation?: boolean;
@@ -15,7 +17,8 @@ let {
 
 let canvas: HTMLCanvasElement;
 
-$effect(() => {
+onMount(() => {
+	let cancel = false;
 	let gl: WebGLRenderingContext;
 	let u_resolution: WebGLUniformLocation;
 	let u_time: WebGLUniformLocation;
@@ -91,6 +94,7 @@ $effect(() => {
 		init();
 		canvas.setAttribute("style", "opacity: unset");
 		frame = requestAnimationFrame(function loop(time) {
+			if (cancel) return;
 			frame = requestAnimationFrame(loop);
 
 			gl.uniform2f(u_resolution, canvas.width, canvas.height);
@@ -98,6 +102,10 @@ $effect(() => {
 			gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 		});
 	});
+
+	return () => {
+		cancel = true;
+	};
 });
 </script>
 

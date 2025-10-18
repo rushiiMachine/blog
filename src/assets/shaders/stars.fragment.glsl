@@ -40,7 +40,7 @@ vec3 Unity_Blackbody_float(float Temperature) {
 }
 
 void main() {
-    const float stars_threshold = 8.0; // modifies the number of stars that are visible
+    const float stars_threshold = 10.0; // modifies the number of stars that are visible
     const float stars_exposure = 500.0; // modifies the overall strength of the stars
 
     // Normalized pixel coordinates (from 0 to 1)

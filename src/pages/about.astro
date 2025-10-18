@@ -21,7 +21,7 @@ const { Content } = await render(aboutPost);
     <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative min-h-32">
         <div class="card-base relative w-full z-10">
             <DarkThemeContainer client:load>
-                <ShaderContainer client:only fragmentShader={starsShader} class="w-full h-full absolute -z-[50]"/>
+                <ShaderContainer client:only fragmentShader={starsShader} class="w-full h-full absolute"/>
             </DarkThemeContainer>
             <Markdown class="mt-2 px-9 py-6">
                 <Content />
