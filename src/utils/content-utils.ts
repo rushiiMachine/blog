@@ -3,7 +3,7 @@ import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import { getCategoryUrl } from "@utils/url-utils.ts";
 
-// // Retrieve posts and sort them by publication date
+// Retrieve posts and sort them by publication date
 async function getRawSortedPosts(includeDrafts = !import.meta.env.PROD) {
 	const allBlogPosts = await getCollection("posts", ({ data }) => {
 		return includeDrafts ? true : data.draft !== true;
@@ -19,14 +19,16 @@ async function getRawSortedPosts(includeDrafts = !import.meta.env.PROD) {
 
 export async function getSortedPosts(includeDrafts = !import.meta.env.PROD) {
 	const sorted = await getRawSortedPosts(includeDrafts);
+	const sortedNonDraft = sorted.filter(post => post.data.draft !== true);
 
-	for (let i = 1; i < sorted.length; i++) {
-		sorted[i].data.nextSlug = sorted[i - 1].slug;
-		sorted[i].data.nextTitle = sorted[i - 1].data.title;
+	const paginate = import.meta.env.PROD ? sortedNonDraft : sorted;
+	for (let i = 1; i < paginate.length; i++) {
+		paginate[i].data.nextSlug = paginate[i - 1].slug;
+		paginate[i].data.nextTitle = paginate[i - 1].data.title;
 	}
-	for (let i = 0; i < sorted.length - 1; i++) {
-		sorted[i].data.prevSlug = sorted[i + 1].slug;
-		sorted[i].data.prevTitle = sorted[i + 1].data.title;
+	for (let i = 0; i < paginate.length - 1; i++) {
+		paginate[i].data.prevSlug = paginate[i + 1].slug;
+		paginate[i].data.prevTitle = paginate[i + 1].data.title;
 	}
 
 	return sorted;
@@ -52,7 +54,7 @@ export type Tag = {
 };
 
 export async function getTagList(): Promise<Tag[]> {
-	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
+	const allBlogPosts = await getCollection("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
 	});
 
@@ -79,7 +81,7 @@ export type Category = {
 };
 
 export async function getCategoryList(): Promise<Category[]> {
-	const allBlogPosts = await getCollection<"posts">("posts", ({ data }) => {
+	const allBlogPosts = await getCollection("posts", ({ data }) => {
 		return import.meta.env.PROD ? data.draft !== true : true;
 	});
 	const count: { [key: string]: number } = {};
