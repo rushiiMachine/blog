@@ -1,0 +1,244 @@
+---
+title: 'Modding apps on Android'
+description: 'A brief overview of various ways of hooking functions on Android'
+#image:
+published: 2024-06-21
+draft: true
+tags: [ "Android", "Modding", "Hooking" ]
+---
+
+import Email from "../../../components/misc/Email.svelte";
+import MDXImage from "../../../components/mdx/MDXImage.astro";
+
+There's a lot of reasons one would want to mod an app: removing ads, removing annoying functionality, adding custom functionality,
+fixing bugs in abandoned apps, cheating in games, and much, much more. I have a lot of modded apps myself - nearly everything I
+use on the daily is modded.
+
+But *how* this is done is pretty mysterious to everyone who is not actually themselves modding apps. My goal with this post is
+to cover all the ways I know how to achieve this, and specifically on how hooking functions actually works.
+
+# Smali Patching
+
+{/* TODO */}
+
+{/* This was the very first common method used to modify Android apps. */}
+
+For reference, here's an example that adds a simple log statement to the following snippet:
+
+```diff
+  int square(int var1) {
++   System.out.println("squaring: " + var1);
+    return var1 * var1;
+  }
+```
+
+Equivalent smali changes:
+
+```diff
++ sget-object v0, Ljava/lang/System;->out:Ljava/io/PrintStream;
++ new-instance v1, Ljava/lang/StringBuilder;
++ invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
++ const-string v2, "squaring: "
++ invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++ move-result-object v1
++ invoke-virtual {v1, p1}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
++ move-result-object v1
++ invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++ move-result-object v1
++ invoke-virtual {v0, v1}, Ljava/io/PrintStream;->println(Ljava/lang/String;)V
+  mul-int p1, p1, p1
+  return p1
+```
+
+{/* When combined with a APK disassembler/assembler such as [apktool], it allows for modifying and reassembling  */}
+
+# Xposed
+
+For over a decade, the predominant tool used to mod Android apps has been Xposed-like frameworks, such as [Xposed], [EdXposed],
+[LSPosed], and [Dreamland]. These tools modify the system in such a way that allows them to inject code into any installed app
+at runtime. To achieve this, they require some sort of root-level access on the device to set it up, as due to sandboxing, it is
+impossible to modify or inject into installed apps on an ordinary system. By injecting into the root process for all apps
+(the Zygote), all app processes forked from it are accessible to the Xposed framework, letting it change app behavior at runtime.
+
+Early implementations of the Xposed framework relied on replacing specific libraries, such as `app_process` or `libart.so`
+(the Android Runtime (ART) VM, responsible for running app bytecode). Such modifications to the system either requires root, or
+flashing a custom-built system image that includes patches to the required libraries. This is how the original [Xposed] project
+achieved this. However, replacing system libraries is a very tricky business. Oftentimes, phone manufacturers (OEMs) include
+their own changes to system libraries, and overriding them would lead to a bricked device due to incompatibilities.
+This was improved upon by future Xposed implementations, which replaced more lightweight libraries, and eventually this
+drawback was eliminated entirely by the discovery of less invasive Zygote injection methods.
+
+Once an app is forked from the Zygote, the Xposed framework loads an ART hooking framework such as [LSPlant], is initialized
+directly in the app's process. The hooking framework then creates inline native hooks into the VM, and replaces/changes the 
+app's loaded bytecode as requested by Xposed modules that are loaded by the Xposed framework.
+
+As mentioned prior, all of these methods rely on some sort of root access on the device. Modern Xposed implementations rely on
+a root framework such as [Magisk] or [KernelSU], that provide the ability to install "modules", which run as root and perform
+modifications to the system without the need to flash a new system image.
+
+For example, this diagram below details how [Riru], a Zygote injection module (later replaced by Zygisk, a part of [Magisk]),
+loads LSPosed, which loads Xposed modules and LSPlant, which then hooks methods in the target app. Note that this diagram is
+**heavily** simplifying what happens under the hood. It is only meant to give a general picture of how all the pieces fit together.
+
+<MDXImage
+    src={import("./xposed-diagram.png")}
+    alt="Diagram showing how LSPosed is loaded through the Zygote."/>
+
+The best part about this is that the target app does not have to be reinstalled - rather, the Xposed framework replaces it's
+code at runtime. In certain situations, this makes the development of mods for apps significantly easier and more stable, as
+the app does not have to be re-patched and reinstalled every time there is an update (assuming the hooks are still compatible).
+
+Despite this, the main drawback of this approach is that it requires **root** on the device - requiring an unlockable bootloader - which
+nowadays is becoming exceedingly rare as OEMs erase consumer control. Certain companies are especially guilty of this, such as
+Samsung, Huawei, Xiaomi, and nearly *all* carrier-locked phones. It's gotten so bad that people have resorted to extreme methods
+just to be able to *use* the device they purchased.
+
+<MDXImage
+    src={import("./xiaomi-bootloader-unlocking.jpg")} 
+    width={480}
+    alt="Xiaomi phone owners are now asking service centers to downgrade their firmware and running away with their phone once their bootloader has been unlocked."/>
+
+These arbitrary restrictions make rooting devices, and by extension, Xposed completely out of reach for most people.
+
+Additionally, rooting your device has some significant potential consequences, such as:
+- Voiding your warranty
+- Significantly lowering the security of your device
+- Making some apps unusable without specialized fixes (such as for banking)
+- Lowering your system's Play Integrity level
+
+But there's a silver lining to all of this; there's still other ways to patch apps that have much less drawbacks!
+
+# LSPlant
+
+You may have noticed that the component doing the actual method hooking, LSPlant, was required to be loaded *only* into the
+target app's process, not requiring root access whatsoever. Since each app is sandboxed under a unique user, the app is free
+to modify anything accessible to the same user, including the main app process itself! This includes loaded native libraries, the
+ART VM, its bytecode, and so on. Since ART handles executing bytecode, by hooking into the internals of the
+loaded VM (internally called `libart`) it's possible to modify the loaded bytecode, and alter its behavior at runtime.
+
+These hooks can be performed without the need of Zygote injection whatsoever, as long as we are already *in* the app itself!
+
+This is made significantly easier given that Android does not have restrictions on page protections, allowing code already loaded
+into memory to be modified on the fly. On iOS, this isn't possible to the same extent due to the PPL (Page Protection Layer), which
+prevents code pages from being modified after their authenticity has been verified. I'm not experienced with modding on iOS, but you
+can read more about iOS's page protections here: [Jailed Just-in-Time Compilation on iOS]. Thankfully, we don't have to deal with
+that on Android, which allows us to `mprotect` code pages to `RWX`, and write to them. This allows inline native hooking frameworks
+such as [Dobby] to function, to replace already-loaded native functions at runtime.
+
+```cpp
+// mprotect code page of *addr to RWX
+static bool Unprotect(void *addr) {
+    auto addr_uint = reinterpret_cast<uintptr_t>(addr);
+    auto page_aligned_prt = reinterpret_cast<void *>(ALIGN_DOWN(addr_uint, page_size_));
+    size_t size = page_size_;
+    if (ALIGN_UP(addr_uint + page_size_, page_size_) != ALIGN_UP(addr_uint, page_size_)) {
+        size += page_size_;
+    }
+
+    int result = mprotect(page_aligned_prt, size, PROT_READ | PROT_WRITE | PROT_EXEC);
+    if (result == -1) {
+        LOGE("mprotect failed for %p: %s (%d)", addr, strerror(errno), errno);
+        return false;
+    }
+    return true;
+}
+
+// Replace function at *address with *replacement
+void *InlineHooker(void *address, void *replacement) {
+    if (!Unprotect(address)) {
+        return nullptr;
+    }
+
+    void *origin_call;
+    if (DobbyHook(address, replacement, &origin_call) == RS_SUCCESS) {
+        return origin_call;
+    } else {
+        return nullptr;
+    }
+}
+```
+
+:::note
+LSPlant is not the only ART hooking library that exists! There has been a variety of others made,
+such as [Pine], [SandHook], [epic], and [YAHFA].
+:::
+
+However, we can't utilize LSPlant directly - there is a significant amount of underlying infrastructure that needs to be setup
+in order to use it for hooking methods. This neatly ties into our next, more user-friendly userspace utility: LSPatch.
+
+# LSPatch
+
+In essence, [LSPatch] is a rootless implementation of LSPosed Xposed framework. It achieves this by repacking application
+APKs to insert LSPlant, user-specified Xposed modules, and the required glue code on the device itself, through an app.
+The patched APK is then able to be installed and be altered the same as if there was a system-wide Xposed framework
+such as [LSPosed] installed.
+
+The main advantage to this is obvious - it's completely rootless. Patching, repacking, resigning, and reinstalling an app
+on the same device does not need root.
+
+There are some drawbacks however. Repacking the apk still takes time, breaks updates to the app (although the user would most
+likely have turned them off anyway), and adds significant friction to usage for the casual user. Development through the use
+of LSPatch takes much longer, just like with [Smali patching](#smali-patching) as a lengthy reinstallation of the app is
+required for every single change.
+
+There are particular situations where long installation times does not matter however, such as in the case of [React Native].
+Unlike its name, it is not actually native, and instead most of the application code runs inside of a Javascript virtual
+machine shipped with the app, such as [Hermes]. In this situation, most of the hooking will happen inside the Javascript
+VM, and as such native hooking is not necessary once your code is loaded into the VM. Therefore, one could use LSPatch
+to setup a limited amount of hooks to inject code into the VM, and from there on, all future code can be loaded and
+injected dynamically. This is most mods for the new React Native Discord app (RNA) function, such as [Vendetta].
+
+# Frida
+
+{/* TODO */}
+
+# Credits
+
+This blog post is in part based on [canyie]'s blog posts on ART hooking:
+- [试着写了一个类Xposed框架] (*[Tried to write a Xposed framework]*)
+- [ART上的动态Java方法hook框架] (*[Dynamic Java method hooking framework on ART]*)
+
+If you spot any issues in this post, please feel free to:
+- Create an issue on this [blog's repository](https://github.com/rushiiMachine/blog/issues/new)
+- Email me at <Email client:load encodedEmail={btoa("contact@rushii.dev")}/>
+
+{/*********** Links ***********/}
+
+{/* Root frameworks */}
+[Magisk]: https://github.com/topjohnwu/Magisk
+[KernelSU]: https://kernelsu.org
+
+{/* Xposed frameworks */}
+[Xposed]: https://github.com/rovo89/Xposed
+[EdXposed]: https://github.com/ElderDrivers/EdXposed
+[LSPosed]: https://github.com/LSPosed/LSPosed
+[Dreamland]: https://github.com/canyie/Dreamland
+
+{/* ART hooking frameworks */}
+[LSPlant]: https://github.com/LSPosed/LSPlant
+[Pine]: https://github.com/canyie/pine
+[SandHook]: https://github.com/asLody/SandHook
+[epic]: https://github.com/tiann/epic
+[YAHFA]: https://github.com/PAGalaxyLab/YAHFA
+
+{/* Discord RNA */}
+[React Native]: https://reactnative.dev
+[Hermes]: https://github.com/facebook/hermes
+[Vendetta]: https://github.com/vendetta-mod/Vendetta
+
+{/* Other projects */}
+[LSPatch]: https://github.com/LSPosed/LSPatch
+[apktool]: https://apktool.org
+[Dobby]: https://github.com/jmpews/Dobby
+[Riru]: https://github.com/RikkaApps/Riru
+
+{/* canyie */}
+[canyie]: https://github.com/canyie
+[试着写了一个类Xposed框架]: https://blog.canyie.top/2020/02/03/a-new-xposed-style-framework/
+[Tried to write a Xposed framework]: https://blog-canyie-top.translate.goog/2020/02/03/a-new-xposed-style-framework/?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en
+[ART上的动态Java方法hook框架]: https://blog.canyie.top/2020/04/27/dynamic-hooking-framework-on-art/
+[Dynamic Java method hooking framework on ART]: https://blog-canyie-top.translate.goog/2020/04/27/dynamic-hooking-framework-on-art/?_x_tr_sl=auto&_x_tr_tl=en&_x_tr_hl=en
+
+{/* Misc documentation */}
+[Jailed Just-in-Time Compilation on iOS]: https://saagarjha.com/blog/2020/02/23/jailed-just-in-time-compilation-on-ios
+[Zygote]: https://source.android.com/docs/core/runtime/zygote
