@@ -67,16 +67,6 @@ export const profileConfig: ProfileConfig = {
 			icon: "fa6-brands:github",
 			url: "https://github.com/rushiiMachine",
 		},
-		{
-			name: "NPM",
-			icon: "fa6-brands:npm",
-			url: "https://www.npmjs.com/~diamond_",
-		},
-		{
-			name: "Email",
-			icon: "fa6-regular:envelope",
-			url: "mailto:contact@rushii.dev",
-		},
 	],
 };
 
