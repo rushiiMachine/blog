@@ -33,8 +33,14 @@ export default defineConfig({
 	base: "/",
 	trailingSlash: "ignore",
 	redirects: {
-		"/posts": "/archive",
-		"/aliucord": "/posts/aliucord-modding-the-legacy-app", // Leftover from old blog
+		"/archive": {
+			status: 301,
+			destination: "/posts",
+		},
+		"/aliucord": { // Leftover from old blog
+			status: 301,
+			destination: "/posts/aliucord-modding-the-legacy-app",
+		},
 	},
 	integrations: [
 		tailwind({
